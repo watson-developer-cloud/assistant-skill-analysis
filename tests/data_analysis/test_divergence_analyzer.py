@@ -1,11 +1,9 @@
-import sys
 import unittest
 import json
 import pandas as pd
 import numpy as np
-sys.path.append('assistant-dialog-skill-analysis')
-from utils import skills_util
-from data_analysis import divergence_analyzer
+from assistant_dialog_skill_analysis.utils import skills_util
+from assistant_dialog_skill_analysis.data_analysis import divergence_analyzer
 
 
 class TestDivergenceAnalyzer(unittest.TestCase):
@@ -13,7 +11,7 @@ class TestDivergenceAnalyzer(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        with open("src/test/resources/test_workspaces/skill-Customer-Care-Sample.json",
+        with open("tests/resources/test_workspaces/skill-Customer-Care-Sample.json",
                   "r") as skill_file:
             workspace_data, workspace_vocabulary = \
                 skills_util.extract_workspace_data(json.load(skill_file))

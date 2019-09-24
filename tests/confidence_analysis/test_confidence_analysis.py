@@ -1,13 +1,12 @@
 import unittest
 import math
-import sys
 import pandas as pd
-sys.path.append('assistant-dialog-skill-analysis')
-from ..confidence_analysis.confidence_analyzer import _get_far_list, _get_ontopic_accuracy_list, \
-    _find_threshold, abnormal_conf,generate_unique_thresholds, _get_bot_coverage_list, analysis, \
+from assistant_dialog_skill_analysis.confidence_analysis.confidence_analyzer import \
+    _get_far_list, _get_ontopic_accuracy_list, _find_threshold, abnormal_conf, \
+    generate_unique_thresholds, _get_bot_coverage_list, analysis, \
     extract_table_analysis, _convert_data_format, analysis_pipeline, extract_by_topic, \
     create_display_table
-from utils.skills_util import OFFTOPIC_LABEL
+from assistant_dialog_skill_analysis.utils.skills_util import OFFTOPIC_LABEL
 
 
 class TestThresholdAnalysis(unittest.TestCase):

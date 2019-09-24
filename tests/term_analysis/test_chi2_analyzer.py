@@ -3,16 +3,15 @@ import unittest
 import json
 import pandas as pd
 
-sys.path.append('assistant-dialog-skill-analysis')
-from  utils import skills_util
-from term_analysis import chi2_analyzer
+from assistant_dialog_skill_analysis.utils import skills_util
+from assistant_dialog_skill_analysis.term_analysis import chi2_analyzer
 
 class TestChi2Analyzer(unittest.TestCase):
     """Test for Chi2 Analyzer module"""
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        test_skill_file = "src/test/resources/test_workspaces/skill-Customer-Care-Sample.json"
+        test_skill_file = "tests/resources/test_workspaces/skill-Customer-Care-Sample.json"
         with open(test_skill_file, "r") as skill_file:
             workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
                 json.load(skill_file))

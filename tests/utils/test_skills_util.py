@@ -2,8 +2,8 @@ import sys
 import unittest
 import json
 import pandas as pd
-sys.path.append('assistant-dialog-skill-analysis')
-from utils import skills_util
+
+from assistant_dialog_skill_analysis.utils import skills_util
 
 class TestSkillsUtil(unittest.TestCase):
     """Test for skills utils module"""
@@ -11,7 +11,7 @@ class TestSkillsUtil(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.skill_file = open(
-            "src/test/resources/test_workspaces/skill-Customer-Care-Sample.json",
+            "tests/resources/test_workspaces/skill-Customer-Care-Sample.json",
             "r")
 
     def test_extract_workspace_data(self):

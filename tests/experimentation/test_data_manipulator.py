@@ -4,9 +4,9 @@ import unittest
 import json
 import numpy as np
 import pandas as pd
-sys.path.append('assistant-dialog-skill-analysis')
-from  utils import skills_util
-from experimentation import data_manipulator
+
+from assistant_dialog_skill_analysis.utils import skills_util
+from assistant_dialog_skill_analysis.experimentation import data_manipulator
 
 
 class TestDataManipulator(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestDataManipulator(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        with open("src/test/resources/test_workspaces/skill-Customer-Care-Sample.json", "r") \
+        with open("tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r") \
                 as skill_file:
             self.workspace = json.load(skill_file)
             workspace_data, workspace_vocabulary = \

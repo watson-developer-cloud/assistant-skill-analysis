@@ -6,10 +6,9 @@ import shutil
 import numpy as np
 import pandas as pd
 
-sys.path.append('assistant-dialog-skill-analysis')
-from highlighting import highlighter
-from inferencing import inferencer
-from utils import skills_util
+from assistant_dialog_skill_analysis.highlighting import highlighter
+from assistant_dialog_skill_analysis.inferencing import inferencer
+from assistant_dialog_skill_analysis.utils import skills_util
 
 CONFIG_FILE = './wa_config.txt'
 THREAD_NUM = 5
@@ -29,9 +28,9 @@ class TestHighLighting(unittest.TestCase):
     Test for summary generator module
     '''
     def setUp(self):
-        self.tmpfolder = 'src/test/resource/highlight_temp_folder/'
-        self.tmpbatchfolder = 'src/test/resource/highlight_temp_folder/batch'
-        self.input_file = 'src/test/resources/test_workspaces/customer_care_skill_test.tsv'
+        self.tmpfolder = 'tests/resources/highlight_temp_folder/'
+        self.tmpbatchfolder = 'tests/resources/highlight_temp_folder/batch'
+        self.input_file = 'tests/resources/test_workspaces/customer_care_skill_test.tsv'
 
         unittest.TestCase.setUp(self)
         with open(CONFIG_FILE) as fi:

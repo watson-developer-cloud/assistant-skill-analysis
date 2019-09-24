@@ -1,5 +1,5 @@
 import unittest
-from utils.skills_util import retrieve_workspace
+from assistant_dialog_skill_analysis.utils.skills_util import retrieve_workspace
 
 CONFIG_FILE = './wa_config.txt'
 

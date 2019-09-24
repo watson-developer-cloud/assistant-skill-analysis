@@ -1,10 +1,9 @@
-import sys
 import unittest
 import json
 import pandas as pd
-sys.path.append('assistant-dialog-skill-analysis')
-from data_analysis import summary_generator
-from utils import skills_util
+
+from assistant_dialog_skill_analysis.data_analysis import summary_generator
+from assistant_dialog_skill_analysis.utils import skills_util
 
 
 class TestSummaryGenerator(unittest.TestCase):
@@ -12,7 +11,7 @@ class TestSummaryGenerator(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        with open("src/test/resources/test_workspaces/skill-Customer-Care-Sample.json", "r") \
+        with open("tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r") \
                 as skill_file:
             workspace_data, workspace_vocabulary = \
                 skills_util.extract_workspace_data(json.load(skill_file))
