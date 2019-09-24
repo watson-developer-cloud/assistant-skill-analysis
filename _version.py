@@ -1,4 +1,4 @@
-# Semantic versioning 
-# MAJOR.MINOR.PATCH 
+# Semantic versioning
+# MAJOR.MINOR.PATCH
 
-__version__ = '0.6.0'
+__version__ = '0.6.3'
