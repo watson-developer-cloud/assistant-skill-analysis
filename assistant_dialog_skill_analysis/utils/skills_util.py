@@ -289,3 +289,23 @@ def _remove_experimentation(nb):
             new_nb_cells.append(cell)
     nb.cells = new_nb_cells
     return nb
+
+
+def retrieve_classifier_response(conversation, workspace_id, text_input, alternate_intents=False):
+    """
+    retrieve classifier response
+    :param conversation: instance
+    :param workspace_id: workspace or skill id
+    :param text_input: the input utterance
+    :param alternate_intents:
+    :return response:
+    """
+    response = conversation.message(
+        input={
+            'message_type': 'text',
+            'text': text_input
+        },
+        workspace_id=workspace_id,
+        alternate_intents=alternate_intents,
+    ).get_result()
+    return response

@@ -3,7 +3,6 @@ import threading
 import _thread
 
 from ..utils import skills_util
-from ..inferencing import inferencer
 
 class InferenceThread(threading.Thread):
     """
@@ -11,7 +10,7 @@ class InferenceThread(threading.Thread):
     """
     def __init__(self, thread_id, name, que, conversation,
                  workspace_id, result, max_retries=10, verbose=False):
-        '''
+        """
         Initialize inferencer
         :param thread_id:
         :param name:
@@ -21,7 +20,7 @@ class InferenceThread(threading.Thread):
         :param result:
         :param max_retries:
         :param verbose:
-        '''
+        """
         threading.Thread.__init__(self)
         self.thread_id = thread_id
         self.name = name
@@ -34,17 +33,17 @@ class InferenceThread(threading.Thread):
         self.exitflag = 0
 
     def run(self):
-        '''
+        """
         Start thread
-        '''
+        """
         print("Starting " + self.name)
         self.thread_inference()
         print("Exiting " + self.name)
 
     def thread_inference(self):
-        '''
+        """
         Define thread run logic
-        '''
+        """
         while not self.exitflag:
             if not self.que.empty():
                 attempt = 1
@@ -58,7 +57,7 @@ class InferenceThread(threading.Thread):
                         break
                     attempt += 1
                     try:
-                        response = inferencer.retrieve_classifier_response(
+                        response = skills_util.retrieve_classifier_response(
                             self.conversation,
                             self.workspace_id,
                             query_question,
@@ -100,7 +99,7 @@ class InferenceThread(threading.Thread):
                 self.exit()
 
     def exit(self):
-        '''
+        """
         Exit thread
-        '''
+        """
         self.exitflag = 1
