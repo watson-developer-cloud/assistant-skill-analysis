@@ -24,7 +24,7 @@ def inference(conversation, workspace_id, test_data, max_retries=10, max_thread=
             attempt = 1
             while attempt <= max_retries:
                 try:
-                    prediction_json = retrieve_classifier_response(
+                    prediction_json = skills_util.retrieve_classifier_response(
                         conversation, workspace_id, test_example, True)
                     time.sleep(.3)
 
@@ -118,25 +118,6 @@ def thread_inference(conversation, workspace_id, test_data,
     result_df = pd.DataFrame(data=result)
     return result_df
 
-def retrieve_classifier_response(conversation, workspace_id, text_input, alternate_intents=False):
-    """
-    retrieve classifier response
-    :param conversation: instance
-    :param workspace_id: workspace or skill id
-    :param text_input: the input utterance
-    :param alternate_intents:
-    :return response:
-    """
-    response = conversation.message(
-        input={
-            'message_type': 'text',
-            'text': text_input
-        },
-        workspace_id=workspace_id,
-        alternate_intents=alternate_intents,
-    ).get_result()
-    return response
-
 def get_intents_confidences(conversation, workspace_id, text_input):
     """
     Retrieve a list of confidence for analysis purpose
@@ -145,7 +126,7 @@ def get_intents_confidences(conversation, workspace_id, text_input):
     :param text_input: input utterance
     :return intent_conf: intent confidences
     """
-    response_info = retrieve_classifier_response(
+    response_info = skills_util.retrieve_classifier_response(
         conversation, workspace_id, text_input, True)['intents']
     intent_conf = [(r['intent'], r['confidence']) for r in response_info]
     return intent_conf
