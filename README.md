@@ -1,7 +1,5 @@
 # Dialog Skill Analysis for Watson Assistant
 
--- Repository in construction, DO NOT USE -- 
-
 ## Introduction
 Dialog Skill Analysis for Watson Assistant is intended for use by chatbot designers and developers who would like to recognize and remediate issues in the design of their dialog skill 
 
