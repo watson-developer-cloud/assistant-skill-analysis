@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from ..utils import skills_util
 from ..inferencing import inferencer
 
-MAX_TOKEN_LENGTH = 15
+MAX_TOKEN_LENGTH = 20
 NGRAM_RANGE = [1]
 
 
