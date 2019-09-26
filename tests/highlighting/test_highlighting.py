@@ -1,5 +1,4 @@
 import unittest
-import sys
 import math
 import os
 import shutil
