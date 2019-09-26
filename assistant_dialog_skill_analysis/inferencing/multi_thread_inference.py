@@ -95,6 +95,7 @@ class InferenceThread(threading.Thread):
                     print('Maximum attempt of {} has reached for query {}'
                           .format(self.max_retries, query_question))
                     _thread.interrupt_main()
+                    self.exit()
             else:
                 self.exit()
 

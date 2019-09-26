@@ -55,13 +55,17 @@ class TestHighLighting(unittest.TestCase):
                         'no he is an arrogant self serving immature idiot get it right',
                         None,
                         'General_Connect_to_Agent',
-                        0.4983435869216919,
+                        0.6697888851165772,
                         0.09834358692169187,
                         9)
 
         self.assertEqual(wrong_examples_sorted[0][2], None,
                          "Test for filter results fail")
-        self.assertEqual(wrong_examples_sorted[0][4], ground_truth[4],
+        self.assertEqual(math.isclose(wrong_examples_sorted[0][4],
+                                      ground_truth[4],
+                                      rel_tol=.01,
+                                      abs_tol=.1),
+                         True,
                          "Test for filter results fail")
 
     def test_generate_adversarial_examples(self):
@@ -131,7 +135,7 @@ class TestHighLighting(unittest.TestCase):
             self.tmpbatchfolder,
             0.4,
             3)
-        self.assertEqual(len(os.listdir(self.tmpbatchfolder)), 2,
+        self.assertEqual(len(os.listdir(self.tmpbatchfolder)), 3,
                          "# of batch highlighting files is mismatched.")
 
     def tearDown(self):
