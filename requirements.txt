@@ -5,6 +5,6 @@ tabulate
 matplotlib
 nltk
 seaborn
-ibm-watson>=3.2.0
+ibm-watson==4.0.1
 scipy>=1.2.0
 jupyter

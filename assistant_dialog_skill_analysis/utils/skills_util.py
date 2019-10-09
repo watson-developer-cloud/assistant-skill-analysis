@@ -10,6 +10,8 @@ import numpy as np
 from nbconvert.preprocessors import ExecutePreprocessor
 import nltk
 import ibm_watson
+from ibm_cloud_sdk_core.authenticators import \
+    IAMAuthenticator, BasicAuthenticator, NoAuthAuthenticator
 
 DEFAULT_API_VERSION = '2019-02-28'
 DEFAULT_PROD_URL = 'https://gateway.watsonplatform.net/assistant/api'
@@ -113,30 +115,15 @@ def retrieve_workspace(iam_apikey=None,
     :param export_flag:
     :return workspace: workspace json
     """
-    conversation = None
 
     if iam_apikey:
-        if url == "https://gateway-s.watsonplatform.net/assistant/api":
-            conversation = ibm_watson.AssistantV1(iam_apikey=iam_apikey,
-                                                  url=url,
-                                                  iam_url=STAGE_IAM_URL,
-                                                  version=api_version)
-        else:
-            conversation = ibm_watson.AssistantV1(iam_apikey=iam_apikey,
-                                                  url=url,
-                                                  version=api_version)
+        authenticator = IAMAuthenticator(apikey=iam_apikey)
     elif username and password:
-        if url == "https://gateway-s.watsonplatform.net/assistant/api":
-            conversation = ibm_watson.AssistantV1(username=username,
-                                                  password=password,
-                                                  url=url,
-                                                  iam_url=STAGE_IAM_URL,
-                                                  version=api_version)
-        else:
-            conversation = ibm_watson.AssistantV1(username=username,
-                                                  password=password,
-                                                  url=url,
-                                                  version=api_version)
+        authenticator = BasicAuthenticator(username=username, password=password)
+    else:
+        authenticator = NoAuthAuthenticator()
+
+    conversation = ibm_watson.AssistantV1(authenticator=authenticator, version=api_version)
 
     if export_flag:
         ws_json = conversation.get_workspace(workspace_id, export=export_flag)
