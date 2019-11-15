@@ -123,7 +123,9 @@ def retrieve_workspace(iam_apikey=None,
     else:
         authenticator = NoAuthAuthenticator()
 
-    conversation = ibm_watson.AssistantV1(authenticator=authenticator, version=api_version)
+    conversation = ibm_watson.AssistantV1(authenticator=authenticator,
+                                          version=api_version)
+    conversation.set_service_url(url)
 
     if export_flag:
         ws_json = conversation.get_workspace(workspace_id, export=export_flag)
