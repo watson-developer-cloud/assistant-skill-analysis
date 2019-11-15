@@ -4,12 +4,23 @@ import _thread
 
 from ..utils import skills_util
 
+
 class InferenceThread(threading.Thread):
     """
     InferenceThread class is used for multi-thread inferencing for faster inference speed
     """
-    def __init__(self, thread_id, name, que, conversation,
-                 workspace_id, result, max_retries=10, verbose=False):
+
+    def __init__(
+        self,
+        thread_id,
+        name,
+        que,
+        conversation,
+        workspace_id,
+        result,
+        max_retries=10,
+        verbose=False,
+    ):
         """
         Initialize inferencer
         :param thread_id:
@@ -61,39 +72,48 @@ class InferenceThread(threading.Thread):
                             self.conversation,
                             self.workspace_id,
                             query_question,
-                            alternate_intents=True)
-                        time.sleep(.2)
-                        if response['intents']:
-                            top_predicts = response['intents']
-                            top_intent = response['intents'][0]['intent']
-                            top_confidence = response['intents'][0]['confidence']
+                            alternate_intents=True,
+                        )
+                        time.sleep(0.2)
+                        if response["intents"]:
+                            top_predicts = response["intents"]
+                            top_intent = response["intents"][0]["intent"]
+                            top_confidence = response["intents"][0]["confidence"]
                         else:
                             top_predicts = []
                             top_intent = skills_util.OFFTOPIC_LABEL
                             top_confidence = 0
 
-                        if response['entities']:
-                            entities = response['entities']
+                        if response["entities"]:
+                            entities = response["entities"]
                         else:
                             entities = []
 
-                        new_dict = {'utterance': query_question,
-                                    'correct_intent': query_data[1],
-                                    'top_intent': top_intent,
-                                    'top_confidence': top_confidence,
-                                    'top_predicts': top_predicts,
-                                    'entities':entities}
+                        new_dict = {
+                            "utterance": query_question,
+                            "correct_intent": query_data[1],
+                            "top_intent": top_intent,
+                            "top_confidence": top_confidence,
+                            "top_predicts": top_predicts,
+                            "entities": entities,
+                        }
                         self.result.append(new_dict)
                         success_flag = True
                     except Exception:
                         if self.verbose:
-                            print("{} process {} fail attempt {}"
-                                  .format(self.name, query_question, i))
-                        time.sleep(.2)
+                            print(
+                                "{} process {} fail attempt {}".format(
+                                    self.name, query_question, i
+                                )
+                            )
+                        time.sleep(0.2)
 
                 if attempt >= self.max_retries:
-                    print('Maximum attempt of {} has reached for query {}'
-                          .format(self.max_retries, query_question))
+                    print(
+                        "Maximum attempt of {} has reached for query {}".format(
+                            self.max_retries, query_question
+                        )
+                    )
                     _thread.interrupt_main()
                     self.exit()
             else:
