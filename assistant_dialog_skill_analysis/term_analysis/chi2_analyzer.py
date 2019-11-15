@@ -15,11 +15,12 @@ def strip_punctuations(utterance: str):
     :param utterance:
     :return:
     """
-    normalization_pattern = '\'s'
-    utterance = re.sub(normalization_pattern, ' is', utterance)
-    puncuation_pattern = '|'.join(skills_util.PUNCTUATION)
-    utterance = re.sub(puncuation_pattern, ' ', utterance)
+    normalization_pattern = "'s"
+    utterance = re.sub(normalization_pattern, " is", utterance)
+    puncuation_pattern = "|".join(skills_util.PUNCTUATION)
+    utterance = re.sub(puncuation_pattern, " ", utterance)
     return utterance
+
 
 def _preprocess_chi2(workspace_pd):
     """
@@ -31,22 +32,28 @@ def _preprocess_chi2(workspace_pd):
     """
     stopword_list = skills_util.STOP_WORDS
 
-    workspace_pd['utterance_punc_stripped'] = \
-        workspace_pd['utterance'].apply(strip_punctuations)
+    workspace_pd["utterance_punc_stripped"] = workspace_pd["utterance"].apply(
+        strip_punctuations
+    )
 
     count_vectorizer = CountVectorizer(
         min_df=1,
-        encoding='utf-8',
+        encoding="utf-8",
         ngram_range=(1, 2),
         stop_words=stopword_list,
         tokenizer=word_tokenize,
-        token_pattern="(?u)\b\w+\b"
-        )
-    features = count_vectorizer.fit_transform(workspace_pd['utterance_punc_stripped']).toarray()
-    labels = workspace_pd['intent']
+        token_pattern="(?u)\b\w+\b",
+    )
+    features = count_vectorizer.fit_transform(
+        workspace_pd["utterance_punc_stripped"]
+    ).toarray()
+    labels = workspace_pd["intent"]
     return labels, count_vectorizer, features
 
-def _compute_chi2_top_feature(features, labels, vectorizer, cls, significance_level=.05):
+
+def _compute_chi2_top_feature(
+    features, labels, vectorizer, cls, significance_level=0.05
+):
     """
     Perform chi2 analysis, punctuation filtering and deduplication
     :param features: count vectorizer features
@@ -83,7 +90,8 @@ def _compute_chi2_top_feature(features, labels, vectorizer, cls, significance_le
 
     return deduplicated_unigram, deduplicated_bigram
 
-def get_chi2_analysis(workspace_pd, significance_level=.05):
+
+def get_chi2_analysis(workspace_pd, significance_level=0.05):
     """
     find correlated unigram and bigram of each intent with Chi2 analysis
     :param workspace_pd: dataframe, workspace data
@@ -93,7 +101,7 @@ def get_chi2_analysis(workspace_pd, significance_level=.05):
     """
     labels, vectorizer, features = _preprocess_chi2(workspace_pd)
 
-    label_frequency_dict = dict(Counter(workspace_pd['intent']).most_common())
+    label_frequency_dict = dict(Counter(workspace_pd["intent"]).most_common())
     N = 5
 
     # keys are the set of unigrams/bigrams and value will be the intent
@@ -108,22 +116,19 @@ def get_chi2_analysis(workspace_pd, significance_level=.05):
     for cls in label_frequency_dict.keys():
 
         unigrams, bigrams = _compute_chi2_top_feature(
-            features,
-            labels,
-            vectorizer,
-            cls,
-            significance_level)
+            features, labels, vectorizer, cls, significance_level
+        )
         classes.append(cls)
 
         if unigrams:
-            chi_unigrams.append(', '.join(unigrams[-N:]))
+            chi_unigrams.append(", ".join(unigrams[-N:]))
         else:
-            chi_unigrams.append('None')
+            chi_unigrams.append("None")
 
         if bigrams:
-            chi_bigrams.append(', '.join(bigrams[-N:]))
+            chi_bigrams.append(", ".join(bigrams[-N:]))
         else:
-            chi_bigrams.append('None')
+            chi_bigrams.append("None")
 
         if unigrams:
             if frozenset(unigrams[-N:]) in unigram_intent_dict:
@@ -139,16 +144,23 @@ def get_chi2_analysis(workspace_pd, significance_level=.05):
                 bigram_intent_dict[frozenset(bigrams[-N:])] = list()
                 bigram_intent_dict[frozenset(bigrams[-N:])].append(cls)
 
-    chi_df = pd.DataFrame(data={'Intent': classes})
-    chi_df['Correlated Unigrams'] = chi_unigrams
-    chi_df['Correlated Bigrams'] = chi_bigrams
+    chi_df = pd.DataFrame(data={"Intent": classes})
+    chi_df["Correlated Unigrams"] = chi_unigrams
+    chi_df["Correlated Bigrams"] = chi_bigrams
 
     display(Markdown(("## Chi-squared Analysis")))
-    with pd.option_context('display.max_rows', None, 'display.max_columns',
-                           None, 'display.max_colwidth', 100):
+    with pd.option_context(
+        "display.max_rows",
+        None,
+        "display.max_columns",
+        None,
+        "display.max_colwidth",
+        100,
+    ):
         chi_df.index = np.arange(1, len(chi_df) + 1)
         display(chi_df)
     return unigram_intent_dict, bigram_intent_dict
+
 
 def get_confusing_key_terms(keyterm_intent_map):
     """
@@ -175,14 +187,23 @@ def get_confusing_key_terms(keyterm_intent_map):
             overlap = correlated_unigrams.intersection(other_correlated_unigrams)
             if overlap:
                 for keyword in overlap:
-                    ambiguous_intents.append("<" + current_label[0] + ", " +
-                                             keyterm_intent_map[other_correlated_unigrams][0] + ">")
+                    ambiguous_intents.append(
+                        "<"
+                        + current_label[0]
+                        + ", "
+                        + keyterm_intent_map[other_correlated_unigrams][0]
+                        + ">"
+                    )
                     ambiguous_keywords.append(keyword)
 
-    df = pd.DataFrame(data={'Intent Pairs': ambiguous_intents, 'Terms': ambiguous_keywords})
+    df = pd.DataFrame(
+        data={"Intent Pairs": ambiguous_intents, "Terms": ambiguous_keywords}
+    )
 
     if not ambiguous_intents:
-        display(Markdown("There is no ambiguity based on top 5 key terms in chi2 analysis"))
+        display(
+            Markdown("There is no ambiguity based on top 5 key terms in chi2 analysis")
+        )
     else:
         display_size = 10
         if not df.empty:
@@ -191,6 +212,7 @@ def get_confusing_key_terms(keyterm_intent_map):
             display(HTML(df.sample(n=display_size).to_html(index=False)))
 
     return df
+
 
 def chi2_overlap_check(ambiguous_unigram_df, ambiguous_bigram_df, intent1, intent2):
     """
@@ -204,10 +226,14 @@ def chi2_overlap_check(ambiguous_unigram_df, ambiguous_bigram_df, intent1, inten
     part1 = None
     part2 = None
     if not ambiguous_unigram_df.empty:
-        part1 = ambiguous_unigram_df[ambiguous_unigram_df['Intent Pairs'].str.contains(intent)]
+        part1 = ambiguous_unigram_df[
+            ambiguous_unigram_df["Intent Pairs"].str.contains(intent)
+        ]
 
     if not ambiguous_bigram_df.empty:
-        part2 = ambiguous_bigram_df[ambiguous_bigram_df['Intent Pairs'].str.contains(intent)]
+        part2 = ambiguous_bigram_df[
+            ambiguous_bigram_df["Intent Pairs"].str.contains(intent)
+        ]
 
     if part1 is not None and part2 is not None:
         display(HTML(pd.concat([part1, part2]).to_html(index=False)))
