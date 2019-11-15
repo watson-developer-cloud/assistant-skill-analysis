@@ -39,7 +39,9 @@ def _preprocess_chi2(workspace_pd):
         encoding='utf-8',
         ngram_range=(1, 2),
         stop_words=stopword_list,
-        tokenizer=word_tokenize)
+        tokenizer=word_tokenize,
+        token_pattern="(?u)\b\w+\b"
+        )
     features = count_vectorizer.fit_transform(workspace_pd['utterance_punc_stripped']).toarray()
     labels = workspace_pd['intent']
     return labels, count_vectorizer, features
