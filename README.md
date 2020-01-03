@@ -1,9 +1,19 @@
 # Dialog Skill Analysis for Watson Assistant
 
 ## Introduction
-Dialog Skill Analysis for Watson Assistant is intended for use by chatbot designers and developers who would like to recognize and remediate issues in the design of their dialog skill 
+Dialog Skill Analysis is a new Python framework along with an easy-to-use Python notebook to help you quickly and effectively build AI assistants using Watson Assistant 
+
+Whether you are new to the process and are building your first AI assistant or you’re a veteran and have an assistant working well in production, this new framework is intended to help everyone with questions like...
+- How do I know my assistant is doing a good job?
+- How do I test and measure my assistant’s performance?
+- Why is the assistant responding incorrectly to this question?
+- How do I improve my assistant’s ability to understand questions?
 
 We assume familiarity with the Watson Assistant product as well as concepts involved in dialog skill design like intent, entities, utterances etc.
+
+## Guides
+
+An introduction to Dialog Skill Analysis for Watson Analysis on Medium: [Announcing Dialog Skill Analysis](https://medium.com/ibm-watson/announcing-dialog-skill-analysis-for-watson-assistant-83cdfb968178?)
 
 ## Usage
 1. Assumes familiarity using a Python Jupyter notebook
@@ -11,6 +21,10 @@ We assume familiarity with the Watson Assistant product as well as concepts invo
 3. Install dependencies with `pip install -r requirements.txt`
 4. Start jupyter server with `jupyter notebook`
 5. Select `skill_analysis.ipynb` to start session
+
+## Hosted Python Notebook
+For those of you familiar with IBM Watson Studio, we have also made a hosted version of the notebook available on the IBM Gallery:  
+[Hosted Dialog Skill Analysis Notebook](https://dataplatform.cloud.ibm.com/exchange/public/entry/view/4d77701840fcb2f21587e39fdb887049)
 
 ## Contributor List
 
