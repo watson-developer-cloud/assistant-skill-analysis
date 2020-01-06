@@ -2,15 +2,11 @@ dist: xenial
 language: python
 python:
 - '3.6'
-env:
-  global:
-  - secure: ewyvYIeK9/U0GSpMHcj2AmKyLatsqVdwIi12UmPCSfmdih9pQY2yPOsWxM5Y8ZwBycdYVdBbEO7TyLCsOH1ebIIx/blArP+CV5k0lHMgrwin9baAg3a4pKfT/qXU7z1fX7TsJ2VVvR/ZWBTY8D84JFmUkJZcSs3JxNHgShEjoPBx61IGxmYSt3cEnjI5M6eKsiXJb51j0yArzL1Nr2yrfKj3IZ58zhxqnSw4hjeGnLJQsyCZb8OK2du8P6Eyo8OqWEcAsdGIvXyCWy4Lx1/ivnDjdsp3297QEjO7kTQ2NMo72rT+5X+x/csjmMmgEIGcuxUHT9qKQjwBeO5q61WzI5ibSkznDpK4mY4rZ+IrRPtP6z8OOhisKiN7VcipEbPMpU/3DP2IF81zAmv8mKqWJjvGqAO8CRBUr1/LfzHS1wA8g8GfPdni8wojJsEck4Okoo1OC/MFByYhYJVGa7EYR1Pz8goc5HQc6hBRpfumKXwJAZWL2Qrtg/z7+uLPQ94pz0jqtjnVrb5Aq9ZBfsj7Dj9TD13swGQG3AWrGI3mw6Yxyc8JHqK3jSwMRyE3Xr+U318hJL0UWWdt/t4iaLXakO206KpQBjz17M87nUPxPG/xlYcMSxEB9Lmqza4+0mfouXz+6/uyYdu42hPLhA+lpgRMlf839nsv7AZvtUVdCME=
-  - secure: lyhY32pEvSfJ8FGfELpziZK4j/bWQfhrMvPPHq31XfCTbi1XSqct9/OVKD7sa2cXf/648y/cX8W06tvAJbCYd7nU0BmTznig5QOgyHdH4xzVYyCLhS/qpdwpcZPm7Bcg2/1Nq7gS+WGHHGZfKatC+TF+MXeu6ls4hUtVnWJN8Vn33fNyZKrjnaDnI4YMzYlnfldNyXtYjyHfFlFitzBnUMuEbUlqhrbQR9yMClsX8V/yezvMXOXMM2SoIyLj254cUvx2I6hG7RvXa6xT6Y0P4p5Ne5Dhy71RVbKeSWG1kxHrKqvgaM1NFaz60RivQvKUlFsKj3fBuprvesBsyK1mZ5EIH7wt991hs2c+W3uAPy98O8fyDM8HIbypMGcWRIPCe3HxChylRvOKS117EZr0742BySsg8AGyof/MNJABhncHY56Ww96aGm+pZkNdKe2fnuzGoKG0wo+iDFBKtdqZkob6GJKfcNiah1NG5SbL7q+6oH5Sq9ExbDLveGGJLs8JGuuaM5yAwUEwcnq+embi8e1q+977sBvV8t9Wogb98i02CE2PQHdExfG4gEAVuntUUsypjWZAugXLa7RN/AqdCkG7VNamon+WDjp9Jz5S2U3ejJR1PVaXxgMMfkcCK5oe2zf9aZ1pSx01AbJx8XZ86UteiWk6SeOgnKX3p/Dzm0s=
+
 install:
+- openssl aes-256-cbc -K $encrypted_56e07cd7ba73_key -iv $encrypted_56e07cd7ba73_iv -in wa_config.txt.enc -out wa_config.txt -d
 - pip install -r requirements.txt
 - export PYTHONPATH=`pwd`
-- touch ./wa_config.txt
-- echo $API_KEY >> ./wa_config.txt
-- echo $WORKSPACE_ID >> ./wa_config.txt
+
 script:
 - python -m unittest discover
