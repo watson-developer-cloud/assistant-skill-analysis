@@ -14,5 +14,5 @@ install:
   - echo $API_KEY >> ./wa_config.txt
   - echo $WORKSPACE_ID >> ./wa_config.txt
 
-unit_test:
+script:
   - python -m unittest discover
