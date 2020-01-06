@@ -3,10 +3,6 @@ language: python
 python:
   - "3.6"
 
-branches:
-  only:
-    - master
-
 env:
   global:
     - secure: "GNV+zcUoL2ONYK88VcmYPWajyk+F9lcvdMxfaxxf7jlbRcr4iVdxo2XDinzIT+NZ9Fo4MWpmM4sb7qr6OYs3BcR8XZdwsN/TIejdKB3Q7w2GzfmL2zFIngyW5fnR2ZBgV7YeqXyKbtfzfVenmXSIvqeHI+S7nkLC+/Z3FlYMkAzUUJ4qnswyMnLuu3mdoqOC2gNPaet1Hi/1yzKZt2mnFZu/J1R+759Fc56XbVEAt8jmo93U7aYUEEyF3z6SweaquV2QZzRGsrBfBEb3/aqF+ApDELNoKLE8B9sL4sGf4nGLxvKGSGvhTNr77/HIkCyo7lspMrH/A9vInq7rmMLIYcje5hIcY8TkReEmJZXAHP/N+uc/jQr4dRizbj9wzKMYP7CZ/HJInSwm9CqJqWyibKfqRcNQxw9MTPsHywqfJ71ki2FMMUmzz1ijHymnZ2fN+nUMtI5aAM8Tzb4/uhd2u39bSsLnQJ/aFrCNRh05015lGc4hBF7vM644+ekGL7AEZf084Sy0a1lueeHIgNZID0pz9QxkhvUvi5vTGbrOTRz4y1AKLcK5jf5xgCw9Hx40ptWs650I91v0feWMK3tnERZ5zXjjLe4qYhEZ2UcMtdk8RN0pKznEzyB4Mo2sQ/wdWRMaspuKIzkBjDNqkEJHHhKAfGkVgJz2NVxxQW3idrM="
