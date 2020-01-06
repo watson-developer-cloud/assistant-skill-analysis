@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/watson-developer-cloud/assistant-dialog-skill-analysis.svg?branch=travis_yml)](https://travis-ci.org/watson-developer-cloud/assistant-dialog-skill-analysis)
+
 # Dialog Skill Analysis for Watson Assistant
 
 ## Introduction
