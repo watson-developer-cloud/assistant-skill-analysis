@@ -46,7 +46,7 @@ class TestHighLighting(unittest.TestCase):
 
         test_df = skills_util.process_test_set(self.input_file)
         self.results = inferencer.inference(self.conversation, self.wksp_id,
-                                            test_df, max_retries=10,
+                                            test_df, max_retries=20,
                                             max_thread=THREAD_NUM, verbose=False)
 
     def test_filter_results(self):

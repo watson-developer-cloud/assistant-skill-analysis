@@ -1,6 +1,7 @@
 import time
 import threading
 import _thread
+import traceback
 
 from ..utils import skills_util
 
@@ -101,6 +102,7 @@ class InferenceThread(threading.Thread):
                         success_flag = True
                     except Exception:
                         if self.verbose:
+                            traceback.print_exc()
                             print(
                                 "{} process {} fail attempt {}".format(
                                     self.name, query_question, i
