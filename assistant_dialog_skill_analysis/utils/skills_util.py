@@ -138,31 +138,25 @@ def input_credentials():
     return apikey, workspace_id
 
 
-def retrieve_workspace(
+def retrieve_conversation(
     iam_apikey=None,
-    workspace_id=None,
     url=DEFAULT_PROD_URL,
     api_version=DEFAULT_API_VERSION,
     username=DEFAULT_USERNAME,
-    password=None,
-    export_flag=True,
-    disable_ssl_verification=False
+    password=None
 ):
     """
     Retrieve workspace from Assistant instance
     :param iam_apikey:
-    :param workspace_id:
     :param url:
     :param api_version:
     :param username:
     :param password:
-    :param export_flag:
-    :param disable_ssl_verification:
     :return workspace: workspace json
     """
 
     if iam_apikey:
-        authenticator = IAMAuthenticator(apikey=iam_apikey, disable_ssl_verification=disable_ssl_verification)
+        authenticator = IAMAuthenticator(apikey=iam_apikey)
     elif username and password:
         authenticator = BasicAuthenticator(username=username, password=password)
     else:
@@ -173,10 +167,19 @@ def retrieve_workspace(
     )
     conversation.set_service_url(url)
 
-    if export_flag:
-        ws_json = conversation.get_workspace(workspace_id, export=export_flag)
-        return conversation, ws_json.get_result()
     return conversation
+
+
+def retrieve_workspace(workspace_id, conversation, export_flag=True):
+    """
+    retrieve the workspace based on the workspace id
+    :param workspace_id:
+    :param conversation:
+    :param export_flag:
+    :return: workspace_dictionary
+    """
+    ws_json = conversation.get_workspace(workspace_id, export=export_flag)
+    return ws_json.get_result()
 
 
 def extract_workspace_data(workspace):
