@@ -146,6 +146,7 @@ def retrieve_workspace(
     username=DEFAULT_USERNAME,
     password=None,
     export_flag=True,
+    disable_ssl_verification=False
 ):
     """
     Retrieve workspace from Assistant instance
@@ -156,11 +157,12 @@ def retrieve_workspace(
     :param username:
     :param password:
     :param export_flag:
+    :param disable_ssl_verification:
     :return workspace: workspace json
     """
 
     if iam_apikey:
-        authenticator = IAMAuthenticator(apikey=iam_apikey)
+        authenticator = IAMAuthenticator(apikey=iam_apikey, disable_ssl_verification=disable_ssl_verification)
     elif username and password:
         authenticator = BasicAuthenticator(username=username, password=password)
     else:
