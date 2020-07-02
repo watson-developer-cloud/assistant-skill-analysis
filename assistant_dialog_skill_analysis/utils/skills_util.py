@@ -143,7 +143,7 @@ def retrieve_conversation(
     url=DEFAULT_PROD_URL,
     api_version=DEFAULT_API_VERSION,
     username=DEFAULT_USERNAME,
-    password=None
+    password=None,
 ):
     """
     Retrieve workspace from Assistant instance

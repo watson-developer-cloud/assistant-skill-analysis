@@ -36,9 +36,7 @@ class TestHighLighting(unittest.TestCase):
             self.apikey = fi.readline().strip()
             self.wksp_id = fi.readline().strip()
 
-        self.conversation = skills_util.retrieve_workspace(iam_apikey=self.apikey,
-                                                           workspace_id=self.wksp_id,
-                                                           export_flag=False)
+        self.conversation = skills_util.retrieve_conversation(iam_apikey=self.apikey)
 
         if not os.path.exists(self.tmpfolder):
             os.makedirs(self.tmpfolder)
