@@ -15,7 +15,7 @@ class TestWorkspaceCredential(unittest.TestCase):
 
     def test_workspace_credentials(self):
         conversation = retrieve_conversation(iam_apikey=self.apikey)
-        _, ws_json = retrieve_workspace(workspace_id=self.wksp_id , conversation=conversation)
+        ws_json = retrieve_workspace(workspace_id=self.wksp_id , conversation=conversation)
         self.assertTrue(len(ws_json['intents']) == 9)
 
 
