@@ -4,7 +4,7 @@ python:
 - '3.6'
 
 install:
-- openssl aes-256-cbc -K $encrypted_56e07cd7ba73_key -iv $encrypted_56e07cd7ba73_iv -in wa_config.txt.enc -out wa_config.txt -d
+- openssl aes-256-cbc -K $encrypted_81eff5529170_key -iv $encrypted_81eff5529170_iv -in wa_config.txt.enc -out wa_config.txt -d
 - pip install -r requirements.txt
 - pip install black==19.10b0
 - export PYTHONPATH=`pwd`

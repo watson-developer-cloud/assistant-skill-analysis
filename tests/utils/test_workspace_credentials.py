@@ -1,5 +1,5 @@
 import unittest
-from assistant_dialog_skill_analysis.utils.skills_util import retrieve_workspace
+from assistant_dialog_skill_analysis.utils.skills_util import retrieve_workspace, retrieve_conversation
 
 CONFIG_FILE = './wa_config.txt'
 
@@ -14,8 +14,10 @@ class TestWorkspaceCredential(unittest.TestCase):
         pass
 
     def test_workspace_credentials(self):
-        _, ws_json = retrieve_workspace(iam_apikey=self.apikey, workspace_id=self.wksp_id)
+        conversation = retrieve_conversation(iam_apikey=self.apikey)
+        _, ws_json = retrieve_workspace(workspace_id=self.wksp_id , conversation=conversation)
         self.assertTrue(len(ws_json['intents']) == 9)
+
 
 if __name__ == "__main__":
     unittest.main()
