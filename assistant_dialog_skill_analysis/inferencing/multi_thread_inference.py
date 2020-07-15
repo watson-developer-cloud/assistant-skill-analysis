@@ -21,6 +21,7 @@ class InferenceThread(threading.Thread):
         result,
         max_retries=10,
         verbose=False,
+        user_id="256"
     ):
         """
         Initialize inferencer
@@ -32,6 +33,7 @@ class InferenceThread(threading.Thread):
         :param result:
         :param max_retries:
         :param verbose:
+        :param user_id:
         """
         threading.Thread.__init__(self)
         self.thread_id = thread_id
@@ -42,6 +44,7 @@ class InferenceThread(threading.Thread):
         self.workspace_id = workspace_id
         self.max_retries = max_retries
         self.verbose = verbose
+        self.user_id = user_id
         self.exitflag = 0
 
     def run(self):
@@ -74,6 +77,7 @@ class InferenceThread(threading.Thread):
                             self.workspace_id,
                             query_question,
                             alternate_intents=True,
+                            user_id=self.user_id
                         )
                         time.sleep(0.2)
                         if response["intents"]:

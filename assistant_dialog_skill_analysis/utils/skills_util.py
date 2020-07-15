@@ -347,7 +347,7 @@ def _remove_experimentation(nb):
 
 
 def retrieve_classifier_response(
-    conversation, workspace_id, text_input, alternate_intents=False
+    conversation, workspace_id, text_input, alternate_intents=False, user_id="256"
 ):
     """
     retrieve classifier response
@@ -355,10 +355,12 @@ def retrieve_classifier_response(
     :param workspace_id: workspace or skill id
     :param text_input: the input utterance
     :param alternate_intents:
+    :param user_id:
     :return response:
     """
     response = conversation.message(
         input={"message_type": "text", "text": text_input},
+        context={"metadata": {"user_id": user_id}},
         workspace_id=workspace_id,
         alternate_intents=alternate_intents,
     ).get_result()
