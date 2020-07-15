@@ -7,7 +7,7 @@ from ..inferencing.multi_thread_inference import InferenceThread
 
 
 def inference(
-    conversation, workspace_id, test_data, max_retries=10, max_thread=5, verbose=False
+    conversation, workspace_id, test_data, max_retries=10, max_thread=5, verbose=False, user_id="256"
 ):
     """
     query the message api to generate results on the test data
@@ -30,7 +30,7 @@ def inference(
             while attempt <= max_retries:
                 try:
                     prediction_json = skills_util.retrieve_classifier_response(
-                        conversation, workspace_id, test_example, True
+                        conversation, workspace_id, test_example, True, user_id
                     )
                     time.sleep(0.3)
 
@@ -72,13 +72,13 @@ def inference(
         result_df = pd.DataFrame(data=responses)
     else:
         result_df = thread_inference(
-            conversation, workspace_id, test_data, max_retries, max_thread, verbose
+            conversation, workspace_id, test_data, max_retries, max_thread, verbose, user_id
         )
     return result_df
 
 
 def thread_inference(
-    conversation, workspace_id, test_data, max_retries=10, max_thread=5, verbose=False
+    conversation, workspace_id, test_data, max_retries=10, max_thread=5, verbose=False, user_id="256"
 ):
     """
     Perform multi thread inference for faster inference time
@@ -88,6 +88,7 @@ def thread_inference(
     :param max_retries: max retries for each call
     :param max_thread: max threads to use
     :param verbose: verbosity of output
+    :param user_id: user_id for billing purpose
     :return result_df: results dataframe
     """
     if max_thread > 5:
@@ -117,6 +118,7 @@ def thread_inference(
             result,
             max_retries,
             verbose,
+            user_id
         )
         thread.start()
         threads.append(thread)
