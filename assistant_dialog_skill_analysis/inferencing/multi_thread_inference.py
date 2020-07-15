@@ -21,7 +21,7 @@ class InferenceThread(threading.Thread):
         result,
         max_retries=10,
         verbose=False,
-        user_id="256"
+        user_id="256",
     ):
         """
         Initialize inferencer
@@ -77,7 +77,7 @@ class InferenceThread(threading.Thread):
                             self.workspace_id,
                             query_question,
                             alternate_intents=True,
-                            user_id=self.user_id
+                            user_id=self.user_id,
                         )
                         time.sleep(0.2)
                         if response["intents"]:

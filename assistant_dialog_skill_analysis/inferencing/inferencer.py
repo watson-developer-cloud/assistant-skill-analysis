@@ -7,7 +7,13 @@ from ..inferencing.multi_thread_inference import InferenceThread
 
 
 def inference(
-    conversation, workspace_id, test_data, max_retries=10, max_thread=5, verbose=False, user_id="256"
+    conversation,
+    workspace_id,
+    test_data,
+    max_retries=10,
+    max_thread=5,
+    verbose=False,
+    user_id="256",
 ):
     """
     query the message api to generate results on the test data
@@ -72,13 +78,25 @@ def inference(
         result_df = pd.DataFrame(data=responses)
     else:
         result_df = thread_inference(
-            conversation, workspace_id, test_data, max_retries, max_thread, verbose, user_id
+            conversation,
+            workspace_id,
+            test_data,
+            max_retries,
+            max_thread,
+            verbose,
+            user_id,
         )
     return result_df
 
 
 def thread_inference(
-    conversation, workspace_id, test_data, max_retries=10, max_thread=5, verbose=False, user_id="256"
+    conversation,
+    workspace_id,
+    test_data,
+    max_retries=10,
+    max_thread=5,
+    verbose=False,
+    user_id="256",
 ):
     """
     Perform multi thread inference for faster inference time
@@ -118,7 +136,7 @@ def thread_inference(
             result,
             max_retries,
             verbose,
-            user_id
+            user_id,
         )
         thread.start()
         threads.append(thread)
