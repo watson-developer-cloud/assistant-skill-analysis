@@ -1,3 +1,7 @@
 *.pyc
 *.ipynb_checkpoints
 *.png
+
+.idea
+wa_config.txt
+notebook_output.ipynb
