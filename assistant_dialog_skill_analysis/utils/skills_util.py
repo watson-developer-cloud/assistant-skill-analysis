@@ -20,6 +20,7 @@ DEFAULT_API_VERSION = "2019-02-28"
 DEFAULT_PROD_URL = "https://gateway.watsonplatform.net/assistant/api"
 DEFAULT_USERNAME = "apikey"
 STAGE_IAM_URL = "https://iam.stage1.bluemix.net/identity/token"
+DEFAULT_AUTHENTICATOR_URL = "https://iam.cloud.ibm.com/identity/token"
 
 OFFTOPIC_LABEL = "SYSTEM_OUT_OF_DOMAIN"
 
@@ -144,6 +145,7 @@ def retrieve_conversation(
     api_version=DEFAULT_API_VERSION,
     username=DEFAULT_USERNAME,
     password=None,
+    authenticator_url=DEFAULT_AUTHENTICATOR_URL
 ):
     """
     Retrieve workspace from Assistant instance
@@ -156,7 +158,7 @@ def retrieve_conversation(
     """
 
     if iam_apikey:
-        authenticator = IAMAuthenticator(apikey=iam_apikey)
+        authenticator = IAMAuthenticator(apikey=iam_apikey, url=authenticator_url)
     elif username and password:
         authenticator = BasicAuthenticator(username=username, password=password)
     else:
