@@ -12,6 +12,10 @@ Whether you are new to the process and are building your first AI assistant or y
 - How do I improve my assistant’s ability to understand questions?
 
 ## Usage
+If you clone the notebook from this repository locally, please use the steps below. For usage in Watson studio, please refer to the 
+session below on [Hosted Python Notebook](#hosted-python-notebook)
+
+
 1. Assumes familiarity using a Python Jupyter notebook
 2. Assumes a Python 3.6 or greater environment (We recommend using Anaconda to setup a python environment)
 3. Install dependencies with `pip install -r requirements.txt`
