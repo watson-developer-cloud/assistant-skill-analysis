@@ -22,6 +22,7 @@ def get_highlights_in_batch_multi_thread(
     output_folder,
     confidence_threshold,
     show_worst_k,
+    lang_util,
 ):
     """
     Given the prediction result, rank prediction results from worst to best
@@ -35,7 +36,9 @@ def get_highlights_in_batch_multi_thread(
     :param show_worst_k: the top worst k results based on heuristics
     :return:
     """
-    wrong_examples_sorted = _filter_results(full_results, confidence_threshold)
+    wrong_examples_sorted = _filter_results(
+        full_results, confidence_threshold, lang_util
+    )
     display(
         Markdown(
             "### Identified {} problematic utterances ".format(
@@ -67,12 +70,15 @@ def get_highlights_in_batch_multi_thread(
                 adversarial_results["correct_intent"] == label_idx
             ]
             highlight = _highlight_scoring(
-                original_example, adversarial_result_subset, adversarial_span_dict
+                original_example,
+                adversarial_result_subset,
+                adversarial_span_dict,
+                lang_util,
             )
-            _plot_highlight(highlight, original_example, output_folder)
+            _plot_highlight(highlight, original_example, output_folder, lang_util)
 
 
-def _filter_results(full_results, confidence_threshold):
+def _filter_results(full_results, confidence_threshold, lang_util):
     """
     Given the full predicted results and confidence threshold,
     this function returns a ranked list of the mis-classified examples
@@ -144,13 +150,13 @@ def _filter_results(full_results, confidence_threshold):
     highlighting_candidates_sorted = [
         candidate
         for candidate in highlighting_candidates_sorted
-        if len(nltk.word_tokenize(candidate[1])) < MAX_TOKEN_LENGTH
+        if len(lang_util.tokenize(candidate[1])) < MAX_TOKEN_LENGTH
     ]
 
     return highlighting_candidates_sorted
 
 
-def _plot_highlight(highlight, original_example, output_folder):
+def _plot_highlight(highlight, original_example, output_folder, lang_util):
     """
     Plot the highlighting score into a plot and store the plot in the output folder
     :param highlight:
@@ -164,7 +170,7 @@ def _plot_highlight(highlight, original_example, output_folder):
     fig, ax = plt.subplots(figsize=(2, 5))
     ax = sns.heatmap(
         [[i] for i in highlight.tolist()],
-        yticklabels=nltk.word_tokenize(original_example[1]),
+        yticklabels=lang_util.tokenize(original_example[1]),
         xticklabels=["Sensitivity to intent: " + '"' + label + '"'],
         cbar_kws={"orientation": "vertical"},
         linewidths=0,
@@ -286,7 +292,7 @@ def _generate_adversarial_examples(utt, original_idx):
 
 
 def _highlight_scoring(
-    original_example, subset_adversarial_result, adversarial_span_dict
+    original_example, subset_adversarial_result, adversarial_span_dict, lang_util
 ):
     """
     Calculate the highlighting score using classification results of adversarial examples
@@ -294,7 +300,7 @@ def _highlight_scoring(
     :param subset_adversarial_result:
     :param adversarial_span_dict:
     """
-    original_utterance = " ".join(nltk.word_tokenize(original_example[1]))
+    original_utterance = " ".join(lang_util.tokenize(original_example[1]))
     original_idx = original_example[0]
     original_intent = original_example[3]
     original_confidence = original_example[4]
