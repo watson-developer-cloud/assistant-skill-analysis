@@ -9,7 +9,7 @@ from ..utils import skills_util
 
 
 def _preprocess_for_heat_map(
-    workspace_df, label_for_display=30, max_token_display=30, class_list=None
+    workspace_df, lang_util, label_for_display=30, max_token_display=30, class_list=None
 ):
     """
     Preprocess dataframe for heat map visualization
@@ -22,7 +22,7 @@ def _preprocess_for_heat_map(
     if class_list:
         workspace_subsampled = workspace_df[workspace_df["intent"].isin(class_list)]
         counts = _get_counts_per_label(
-            workspace_subsampled, unigrams_col_name="unigrams"
+            workspace_subsampled, lang_util=lang_util, unigrams_col_name="unigrams"
         )
     else:
         if len(label_frequency_dict) > label_for_display:
@@ -31,10 +31,12 @@ def _preprocess_for_heat_map(
                 workspace_df["intent"].isin(top_30_labels)
             ]
             counts = _get_counts_per_label(
-                workspace_subsampled, unigrams_col_name="unigrams"
+                workspace_subsampled, lang_util=lang_util, unigrams_col_name="unigrams"
             )
         else:
-            counts = _get_counts_per_label(workspace_df, unigrams_col_name="unigrams")
+            counts = _get_counts_per_label(
+                workspace_df, lang_util=lang_util, unigrams_col_name="unigrams"
+            )
 
     max_n = np.int(
         np.ceil(max_token_display / len(counts.index.get_level_values(0).unique()))
@@ -43,7 +45,7 @@ def _preprocess_for_heat_map(
     return counts, top_counts
 
 
-def _get_counts_per_label(training_data, unigrams_col_name="unigrams"):
+def _get_counts_per_label(training_data, lang_util, unigrams_col_name="unigrams"):
     """
     Create a new dataframe to store unigram counts for each label
     :param training_data: pandas df
@@ -54,7 +56,6 @@ def _get_counts_per_label(training_data, unigrams_col_name="unigrams"):
         nltk.word_tokenize
     )
     rows = list()
-    stopword_list = skills_util.STOP_WORDS
     for row in training_data[["intent", unigrams_col_name]].iterrows():
         r = row[1]
         for word in r.unigrams:
@@ -64,7 +65,7 @@ def _get_counts_per_label(training_data, unigrams_col_name="unigrams"):
     # delete all empty words and chars
     words = words[words.word.str.len() > 1]
     # delete stopwords
-    words = words.loc[~words["word"].isin(stopword_list)]
+    words = words.loc[~words["word"].isin(lang_util.stop_words)]
     # get counts per word
     counts = (
         words.groupby("intent")
@@ -91,7 +92,7 @@ def _get_top_n(series, top_n=5, index_level=0):
 
 
 def seaborn_heatmap(
-    workspace_df, label_for_display=30, max_token_display=30, class_list=None
+    workspace_df, lang_util, label_for_display=30, max_token_display=30, class_list=None
 ):
     """
     Create heat map of word frequencies per intent
@@ -101,7 +102,7 @@ def seaborn_heatmap(
     :param class_list:
     """
     counts, top_counts = _preprocess_for_heat_map(
-        workspace_df, label_for_display, max_token_display, class_list
+        workspace_df, lang_util, label_for_display, max_token_display, class_list
     )
     reset_groupby = counts.reset_index()
     most_frequent_words = top_counts.reset_index()["word"].unique()

@@ -11,6 +11,8 @@ Whether you are new to the process and are building your first AI assistant or y
 - Why is the assistant responding incorrectly to this question?
 - How do I improve my assistant’s ability to understand questions?
 
+Currently Supported Languages: en, fr, cs, de, es, fr, it, pt
+
 ## Usage
 If you clone the notebook from this repository locally, please use the steps below. For usage in Watson studio, please refer to the 
 session below on [Hosted Python Notebook](#hosted-python-notebook)

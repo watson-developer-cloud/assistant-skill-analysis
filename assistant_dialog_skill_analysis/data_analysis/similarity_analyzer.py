@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from IPython.display import display, Markdown, HTML
 
 
-def ambiguous_examples_analysis(workspace_pd, threshold=0.7):
+def ambiguous_examples_analysis(workspace_pd, lang_util, threshold=0.7):
     """
     Analyze the test workspace and find out similar utterances that belongs to different intent
     :param workspace_pd: pandas dataframe in format of [utterance,label]
@@ -14,7 +14,7 @@ def ambiguous_examples_analysis(workspace_pd, threshold=0.7):
                                            'similarity score']
     """
     # first create the feature matrix
-    vectorizer = CountVectorizer(ngram_range=(1, 2))
+    vectorizer = CountVectorizer(ngram_range=(1, 2), tokenizer=lang_util.tokenize)
     workspace_bow = vectorizer.fit_transform(workspace_pd["utterance"]).todense()
     cos_sim_score_matrix = _calculate_cosine_similarity(workspace_bow)
 

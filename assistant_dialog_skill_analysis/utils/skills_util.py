@@ -8,7 +8,6 @@ import nbformat
 import pandas as pd
 import numpy as np
 from nbconvert.preprocessors import ExecutePreprocessor
-import nltk
 import ibm_watson
 from ibm_cloud_sdk_core.authenticators import (
     IAMAuthenticator,
@@ -27,48 +26,6 @@ OFFTOPIC_LABEL = "SYSTEM_OUT_OF_DOMAIN"
 LABEL_FONT = {"family": "normal", "weight": "bold", "size": 17}
 
 TITLE_FONT = {"family": "normal", "weight": "bold", "size": 25}
-
-PUNCTUATION = [
-    ";",
-    ":",
-    ",",
-    "\.",
-    '"',
-    "'",
-    "\?",
-    "\(",
-    "\)",
-    "!",
-    "？",
-    "！",
-    "；",
-    "：",
-    "。",
-    "、",
-    "《",
-    "》",
-    "，",
-    "¿",
-    "¡",
-    "؟",
-    "،",
-]
-
-STOP_WORDS = [
-    "an",
-    "a",
-    "in",
-    "on",
-    "be",
-    "or",
-    "of",
-    "and",
-    "can",
-    "is",
-    "to",
-    "the",
-    "i",
-]
 
 
 def stratified_sampling(workspace, sampling_percentage=0.8):
@@ -145,7 +102,7 @@ def retrieve_conversation(
     api_version=DEFAULT_API_VERSION,
     username=DEFAULT_USERNAME,
     password=None,
-    authenticator_url=DEFAULT_AUTHENTICATOR_URL
+    authenticator_url=DEFAULT_AUTHENTICATOR_URL,
 ):
     """
     Retrieve workspace from Assistant instance
@@ -184,26 +141,30 @@ def retrieve_workspace(workspace_id, conversation, export_flag=True):
     return ws_json.get_result()
 
 
-def extract_workspace_data(workspace):
+def extract_workspace_data(workspace, language_util):
     """
     Extract relevant data and vocabulary
     :param workspace:
-    :return relevant_data:
-    :return vocabulary:
+    :param language_util:
+    :return: workspace_pd, vocabulary
     """
-    relevant_data = {"utterance": list(), "intent": list()}
+    relevant_data = {"utterance": list(), "intent": list(), "tokens": list()}
     vocabulary = set()
     for i in range(len(workspace["intents"])):
         current_intent = workspace["intents"][i]["intent"]
         for j in range(len(workspace["intents"][i]["examples"])):
             current_example = workspace["intents"][i]["examples"][j]["text"]
+            current_example = language_util.preprocess(current_example)
             relevant_data["utterance"].append(current_example)
             relevant_data["intent"].append(current_intent)
-            vocabulary.update(nltk.word_tokenize(current_example))
-    return relevant_data, vocabulary
+            tokens = language_util.tokenize(current_example)
+            relevant_data["tokens"].append(tokens)
+            vocabulary.update(tokens)
+    workspace_pd = pd.DataFrame(relevant_data)
+    return workspace_pd, vocabulary
 
 
-def process_test_set(test_set_filename, delim="\t"):
+def process_test_set(test_set_filename, lang_util, delim="\t"):
     """
     Process test set given the path to the test file
     :param test_set_filename: link to the test file in tsv format
@@ -211,18 +172,24 @@ def process_test_set(test_set_filename, delim="\t"):
     """
     user_inputs = list()
     intents = list()
+    tokens_list = list()
     with open(test_set_filename, "r", encoding="utf-8") as ts:
         reader = csv.reader(ts, delimiter=delim)
         for row in reader:
+            if len(row) == 0:
+                continue
+            cur_example = lang_util.preprocess(row[0])
+            tokens = lang_util.tokenize(cur_example)
+            user_inputs.append(cur_example)
+            tokens_list.append(tokens)
             if len(row) == 2:
-                user_inputs.append(row[0])
                 intents.append(row[1])
             elif len(row) == 1:
-                user_inputs.append(row[0])
                 intents.append(OFFTOPIC_LABEL)
-            else:
-                continue
-    test_df = pd.DataFrame(data={"utterance": user_inputs, "intent": intents})
+
+    test_df = pd.DataFrame(
+        data={"utterance": user_inputs, "intent": intents, "tokens": tokens_list}
+    )
     return test_df
 
 
@@ -238,18 +205,6 @@ def export_workspace(conversation, experiment_workspace_id, export_path):
     ).get_result()
     with open(export_path, "w+", encoding="utf-8") as outfile:
         json.dump(response, outfile)
-
-
-def load_stopword_list(path):
-    """
-    :param path: path to stopwords list
-    :return stopword_list:
-    """
-    stopword_list = list()
-    with open(path, "r", encoding="utf-8") as filehandle:
-        for line in filehandle:
-            stopword_list.append(line.strip())
-    return stopword_list
 
 
 def run_notebook(notebook_path, iam_apikey, wksp_id, test_file, output_path):

@@ -1,4 +1,3 @@
-import re
 from collections import Counter
 import pandas as pd
 import numpy as np
@@ -6,23 +5,9 @@ from IPython.display import display, Markdown, HTML
 from sklearn.feature_selection import chi2
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk import word_tokenize
-from ..utils import skills_util
 
 
-def strip_punctuations(utterance: str):
-    """
-    function to strip punctuations from the utternace
-    :param utterance:
-    :return:
-    """
-    normalization_pattern = "'s"
-    utterance = re.sub(normalization_pattern, " is", utterance)
-    puncuation_pattern = "|".join(skills_util.PUNCTUATION)
-    utterance = re.sub(puncuation_pattern, " ", utterance)
-    return utterance
-
-
-def _preprocess_chi2(workspace_pd):
+def _preprocess_chi2(workspace_pd, lang_util):
     """
     Preprocess dataframe for chi2 analysis
     :param workspace_pd: Preprocess dataframe for chi2
@@ -30,23 +15,16 @@ def _preprocess_chi2(workspace_pd):
     :return count_vectorizer: vectorizer instance
     :return features: features from transform
     """
-    stopword_list = skills_util.STOP_WORDS
-
-    workspace_pd["utterance_punc_stripped"] = workspace_pd["utterance"].apply(
-        strip_punctuations
-    )
 
     count_vectorizer = CountVectorizer(
         min_df=1,
         encoding="utf-8",
         ngram_range=(1, 2),
-        stop_words=stopword_list,
-        tokenizer=word_tokenize,
+        stop_words=lang_util.stop_words,
+        tokenizer=lang_util.tokenize,
         token_pattern="(?u)\b\w+\b",
     )
-    features = count_vectorizer.fit_transform(
-        workspace_pd["utterance_punc_stripped"]
-    ).toarray()
+    features = count_vectorizer.fit_transform(workspace_pd["utterance"]).toarray()
     labels = workspace_pd["intent"]
     return labels, count_vectorizer, features
 
@@ -91,7 +69,9 @@ def _compute_chi2_top_feature(
     return deduplicated_unigram, deduplicated_bigram
 
 
-def get_chi2_analysis(workspace_pd, significance_level=0.05):
+def get_chi2_analysis(
+    workspace_pd, lang_util, significance_level=0.05,
+):
     """
     find correlated unigram and bigram of each intent with Chi2 analysis
     :param workspace_pd: dataframe, workspace data
@@ -99,7 +79,7 @@ def get_chi2_analysis(workspace_pd, significance_level=0.05):
     :return unigram_intent_dict:
     :return bigram_intent_dict:
     """
-    labels, vectorizer, features = _preprocess_chi2(workspace_pd)
+    labels, vectorizer, features = _preprocess_chi2(workspace_pd, lang_util)
 
     label_frequency_dict = dict(Counter(workspace_pd["intent"]).most_common())
     N = 5

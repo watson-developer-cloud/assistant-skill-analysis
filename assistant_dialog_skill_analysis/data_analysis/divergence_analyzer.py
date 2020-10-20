@@ -3,7 +3,6 @@ from IPython.display import Markdown, display
 import numpy as np
 import pandas as pd
 from scipy.spatial import distance
-from nltk import word_tokenize
 
 
 def _label_percentage(data_frame):
@@ -92,13 +91,11 @@ def _train_test_vocab_difference(train_set_pd, test_set_pd):
     """
     train_vocab = set()
     test_vocab = set()
-    train_set_tokens = train_set_pd["utterance"].apply(word_tokenize)
-    test_set_tokens = test_set_pd["utterance"].apply(word_tokenize)
 
-    for tokens in train_set_tokens.tolist():
+    for tokens in train_set_pd["tokens"].tolist():
         train_vocab.update(tokens)
 
-    for tokens in test_set_tokens.tolist():
+    for tokens in test_set_pd["tokens"].tolist():
         test_vocab.update(tokens)
 
     return train_vocab, test_vocab
@@ -113,12 +110,10 @@ def _train_test_utterance_length_difference(train_set_pd, test_set_pd):
     train_test_legnth_comparison: pandas dataframe [Intent, Absolute Difference]
     """
     train_pd_temp = train_set_pd.copy()
-    train_pd_temp["tokens"] = train_set_pd["utterance"].apply(word_tokenize)
     train_pd_temp["Train"] = train_pd_temp["tokens"].apply(len)
     train_avg_len_by_label = train_pd_temp[["intent", "Train"]].groupby("intent").mean()
 
     test_pd_temp = test_set_pd.copy()
-    test_pd_temp["tokens"] = test_set_pd["utterance"].apply(word_tokenize)
     test_pd_temp["Test"] = test_pd_temp["tokens"].apply(len)
     test_avg_len_by_label = test_pd_temp[["intent", "Test"]].groupby("intent").mean()
 
@@ -192,11 +187,11 @@ def analyze_train_test_diff(train_set_pd, test_set_pd, results):
     missing_label, difference_dict, js = _train_test_label_difference(
         workspace_label_percentage_dict, test_label_percentage_dict
     )
-    train_vocab, test_vocab = _train_test_vocab_difference(train_set_pd, test_set_pd)
-
     train_test_length_comparison_pd = _train_test_utterance_length_difference(
         train_set_pd, test_set_pd
     )
+
+    train_vocab, test_vocab = _train_test_vocab_difference(train_set_pd, test_set_pd)
 
     display(Markdown("## Test Data Evaluation"))
 
