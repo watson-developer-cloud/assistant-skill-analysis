@@ -2,34 +2,13 @@ from nltk.stem.snowball import SnowballStemmer
 import unicodedata
 import re
 from spacy.tokenizer import Tokenizer
-
+import sys
 
 SUPPORTED_LANGUAGE = ["en", "fr", "de", "cs", "es", "it", "pt"]
-
 PUNCTUATION = [
-    ";",
-    ":",
-    ",",
-    "\.",
-    '"',
-    "'",
-    "\?",
-    "\(",
-    "\)",
-    "!",
-    "？",
-    "！",
-    "；",
-    "：",
-    "。",
-    "、",
-    "《",
-    "》",
-    "，",
-    "¿",
-    "¡",
-    "؟",
-    "،",
+    "\\" + chr(i)
+    for i in range(sys.maxunicode)
+    if unicodedata.category(chr(i)).startswith("P")
 ]
 
 
@@ -63,7 +42,7 @@ class LanguageUtility:
                 "assistant_dialog_skill_analysis/resources/en/stopwords"
             )
 
-        if self.language_code == "fr":
+        elif self.language_code == "fr":
             from spacy.lang.fr import French
 
             self.tokenizer = Tokenizer(French().vocab)
@@ -72,7 +51,7 @@ class LanguageUtility:
                 "assistant_dialog_skill_analysis/resources/fr/stopwords"
             )
 
-        if self.language_code == "de":
+        elif self.language_code == "de":
             from spacy.lang.de import German
 
             self.tokenizer = Tokenizer(German().vocab)
@@ -81,7 +60,7 @@ class LanguageUtility:
                 "assistant_dialog_skill_analysis/resources/de/stopwords"
             )
 
-        if self.language_code == "it":
+        elif self.language_code == "it":
             from spacy.lang.it import Italian
 
             self.tokenizer = Tokenizer(Italian().vocab)
@@ -90,7 +69,7 @@ class LanguageUtility:
                 "assistant_dialog_skill_analysis/resources/it/stopwords"
             )
 
-        if self.language_code == "cs":
+        elif self.language_code == "cs":
             from spacy.lang.cs import Czech
 
             self.tokenizer = Tokenizer(Czech().vocab)
@@ -98,7 +77,7 @@ class LanguageUtility:
                 "assistant_dialog_skill_analysis/resources/cs/stopwords"
             )
 
-        if self.language_code == "pt":
+        elif self.language_code == "pt":
             from spacy.lang.pt import Portuguese
 
             self.tokenizer = Tokenizer(Portuguese().vocab)
@@ -107,7 +86,7 @@ class LanguageUtility:
                 "assistant_dialog_skill_analysis/resources/pt/stopwords"
             )
 
-        if self.language_code == "es":
+        elif self.language_code == "es":
             from spacy.lang.es import Spanish
 
             self.tokenizer = Tokenizer(Spanish().vocab)
@@ -115,13 +94,15 @@ class LanguageUtility:
             self.stop_words = self.load_stop_words(
                 "assistant_dialog_skill_analysis/resources/es/stopwords"
             )
+        else:
+            raise Exception("language code %s is not supported", self.language_code)
 
     def preprocess(self, sentence):
         sentence = sentence.lower()
+        sentence = self.contraction_normalization(sentence)
         sentence = self.strip_punctuations(sentence)
         if self.language_code in ["fr", "es", "cs", "es", "pt"]:
             sentence = self.accent_removal(sentence)
-
         return sentence
 
     def load_stop_words(self, path):
@@ -138,19 +119,29 @@ class LanguageUtility:
         :param utterance:
         :return:
         """
-
-        sentence = sentence.replace("'s", " is ")
         sentence = re.sub(self.punctuation_pattern, " ", sentence)
         return sentence
 
+    def contraction_normalization(self, sentence):
+        """
+        common contraction normalization for english
+        :param sentence:
+        :return:
+        """
+        sentence = sentence.replace("'s", " is ")
+        sentence = sentence.replace("n't", " not ")
+        sentence = sentence.replace("'ll", " will ")
+        sentence = sentence.replace("'m", " am ")
+        return sentence
+
     def accent_removal(self, sentence):
-        """from facebook research xlm preprocessing
+        """origin from facebook research xlm preprocessing
         https://github.com/facebookresearch/XLM"""
-        sentence = unicodedata.normalize("NFD", sentence)
-        output = []
-        for char in sentence:
-            cat = unicodedata.category(char)
-            if cat == "Mn":
-                continue
-            output.append(char)
-        return "".join(output)
+
+        return "".join(
+            [
+                ch
+                for ch in unicodedata.normalize("NFD", sentence)
+                if unicodedata.category(ch) != "Mn"
+            ]
+        )

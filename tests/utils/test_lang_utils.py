@@ -14,51 +14,52 @@ class TestLangUtils(unittest.TestCase):
     def test_en(self):
         util = LanguageUtility("en")
         sent = util.preprocess("boston resided on the east coast of us!")
-        self.assertTrue("!" not in sent)
+        self.assertEqual(sent, "boston resided on the east coast of us ")
         sent = util.tokenize(sent)
-        self.assertTrue("resid" in sent)
+        self.assertEqual(
+            sent, ["boston", "resid", "on", "the", "east", "coast", "of", "us"]
+        )
 
     def test_fr(self):
         util = LanguageUtility("fr")
         sent = util.preprocess("ils se donnèrent")
-        self.assertTrue("è" not in sent)
+        self.assertEqual(sent, "ils se donnerent")
         sent = util.tokenize(sent)
-        self.assertTrue(len(sent) == 3)
-
-    def test_es(self):
-        util = LanguageUtility("es")
-        sent = util.preprocess("ils se donnèrent")
-        self.assertTrue("è" not in sent)
-        sent = util.tokenize(sent)
-        self.assertTrue(len(sent) == 3)
+        self.assertEqual(sent, ["il", "se", "donnerent"])
 
     def test_cs(self):
         util = LanguageUtility("cs")
         sent = util.preprocess("ils se donnèrent")
-        self.assertTrue("è" not in sent)
         sent = util.tokenize(sent)
-        self.assertTrue(len(sent) == 3)
-
-    def test_de(self):
-        util = LanguageUtility("cs")
-        sent = util.preprocess("ils se donnèrent")
-        self.assertTrue("è" not in sent)
-        sent = util.tokenize(sent)
-        self.assertTrue(len(sent) == 3)
+        self.assertEqual(sent, ["ils", "se", "donnerent"])
 
     def test_pt(self):
-        util = LanguageUtility("cs")
+        util = LanguageUtility("pt")
         sent = util.preprocess("ils se donnèrent")
-        self.assertTrue("è" not in sent)
+        self.assertEqual(sent, "ils se donnerent")
         sent = util.tokenize(sent)
-        self.assertTrue(len(sent) == 3)
+        self.assertEqual(sent, ["ils", "se", "donnerent"])
 
     def test_it(self):
-        util = LanguageUtility("cs")
-        sent = util.preprocess("ils se donnèrent")
-        self.assertTrue("è" not in sent)
+        util = LanguageUtility("it")
+        sent = util.preprocess("pronuncerà")
+        self.assertEqual(sent, "pronuncerà")
         sent = util.tokenize(sent)
-        self.assertTrue(len(sent) == 3)
+        self.assertEqual(sent, ["pronunc"])
+
+    def test_es(self):
+        util = LanguageUtility("es")
+        sent = util.preprocess("toreándolo")
+        self.assertEqual(sent, "toreandolo")
+        sent = util.tokenize(sent)
+        self.assertEqual(sent, ["tor"])
+
+    def test_de(self):
+        util = LanguageUtility("de")
+        sent = util.preprocess("Autobahnen")
+        self.assertEqual(sent, "autobahnen")
+        sent = util.tokenize(sent)
+        self.assertEqual(sent, ["autobahn"])
 
     def tearDown(self):
         unittest.TestCase.tearDown(self)
