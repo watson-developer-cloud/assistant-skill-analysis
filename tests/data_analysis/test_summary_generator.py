@@ -3,7 +3,7 @@ import json
 import pandas as pd
 
 from assistant_dialog_skill_analysis.data_analysis import summary_generator
-from assistant_dialog_skill_analysis.utils import skills_util
+from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
 
 
 class TestSummaryGenerator(unittest.TestCase):
@@ -11,10 +11,13 @@ class TestSummaryGenerator(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
-        with open("tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r") \
-                as skill_file:
-            workspace_data, workspace_vocabulary = \
-                skills_util.extract_workspace_data(json.load(skill_file))
+
+        with open(
+            "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
+        ) as skill_file:
+            workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
+                json.load(skill_file), lang_utils.LanguageUtility("en")
+            )
             self.workspace_df = pd.DataFrame(workspace_data)
 
     def test_class_imbalance(self):
@@ -26,5 +29,5 @@ class TestSummaryGenerator(unittest.TestCase):
         unittest.TestCase.tearDown(self)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

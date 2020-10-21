@@ -8,3 +8,4 @@ seaborn
 ibm-watson>=4.5.0
 scipy>=1.2.0
 jupyter
+spacy==3.0.2
