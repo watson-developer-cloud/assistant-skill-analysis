@@ -36,7 +36,7 @@ class LanguageUtility:
     def init_resources(self):
         self.punctuation_pattern = re.compile("|".join(PUNCTUATION))
         self.stemmer = None
-        resource_path = os.path.join(
+        stopwords_path = os.path.join(
             os.path.dirname(assistant_dialog_skill_analysis.__file__),
             "resources",
             self.language_code,
@@ -47,48 +47,48 @@ class LanguageUtility:
 
             self.tokenizer = Tokenizer(English().vocab)
             self.stemmer = SnowballStemmer(language="english")
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
 
         elif self.language_code == "fr":
             from spacy.lang.fr import French
 
             self.tokenizer = Tokenizer(French().vocab)
             self.stemmer = SnowballStemmer(language="french")
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
 
         elif self.language_code == "de":
             from spacy.lang.de import German
 
             self.tokenizer = Tokenizer(German().vocab)
             self.stemmer = SnowballStemmer(language="german")
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
 
         elif self.language_code == "it":
             from spacy.lang.it import Italian
 
             self.tokenizer = Tokenizer(Italian().vocab)
             self.stemmer = SnowballStemmer(language="italian")
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
 
         elif self.language_code == "cs":
             from spacy.lang.cs import Czech
 
             self.tokenizer = Tokenizer(Czech().vocab)
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
 
         elif self.language_code == "pt":
             from spacy.lang.pt import Portuguese
 
             self.tokenizer = Tokenizer(Portuguese().vocab)
             self.stemmer = SnowballStemmer(language="portuguese")
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
 
         elif self.language_code == "es":
             from spacy.lang.es import Spanish
 
             self.tokenizer = Tokenizer(Spanish().vocab)
             self.stemmer = SnowballStemmer(language="spanish")
-            self.stop_words = self.load_stop_words(resource_path)
+            self.stop_words = self.load_stop_words(stopwords_path)
         else:
             raise Exception("language code %s is not supported", self.language_code)
 

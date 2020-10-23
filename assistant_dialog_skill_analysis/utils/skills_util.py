@@ -172,7 +172,7 @@ def process_test_set(test_set, lang_util, delim="\t", cos=False):
     :param test_set: path to the test set on the local computer or cos object body of test csv
     :param lang_util: language utility
     :param delim: delimiter, use "," for cos instance
-    :param cos: cos flag to indicate whether this is a path from local system or
+    :param cos: cos flag to indicate whether this is a path from local system or stream body from cos
     :return:
     """
     user_inputs = list()
