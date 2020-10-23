@@ -9,11 +9,13 @@ import pandas as pd
 import numpy as np
 from nbconvert.preprocessors import ExecutePreprocessor
 import ibm_watson
+import codecs
 from ibm_cloud_sdk_core.authenticators import (
     IAMAuthenticator,
     BasicAuthenticator,
     NoAuthAuthenticator,
 )
+
 
 DEFAULT_API_VERSION = "2019-02-28"
 DEFAULT_PROD_URL = "https://gateway.watsonplatform.net/assistant/api"
@@ -164,28 +166,35 @@ def extract_workspace_data(workspace, language_util):
     return workspace_pd, vocabulary
 
 
-def process_test_set(test_set_filename, lang_util, delim="\t"):
+def process_test_set(test_set, lang_util, delim="\t", cos=False):
     """
-    Process test set given the path to the test file
-    :param test_set_filename: link to the test file in tsv format
-    :return test_df: test set stored in pandas dataframe
+    Process test set given the path to the test fil
+    :param test_set: path to the test set on the local computer or cos object body of test csv
+    :param lang_util: language utility
+    :param delim: delimiter, use "," for cos instance
+    :param cos: cos flag to indicate whether this is a path from local system or stream body from cos
+    :return:
     """
     user_inputs = list()
     intents = list()
     tokens_list = list()
-    with open(test_set_filename, "r", encoding="utf-8") as ts:
-        reader = csv.reader(ts, delimiter=delim)
-        for row in reader:
-            if len(row) == 0:
-                continue
-            cur_example = lang_util.preprocess(row[0])
-            tokens = lang_util.tokenize(cur_example)
-            user_inputs.append(cur_example)
-            tokens_list.append(tokens)
-            if len(row) == 2:
-                intents.append(row[1])
-            elif len(row) == 1:
-                intents.append(OFFTOPIC_LABEL)
+    if not cos:
+        with open(test_set, "r", encoding="utf-8") as ts:
+            reader = csv.reader(ts, delimiter=delim)
+    else:
+        reader = csv.reader(codecs.getreader("utf-8")(test_set), delimiter=delim)
+
+    for row in reader:
+        if len(row) == 0:
+            continue
+        cur_example = lang_util.preprocess(row[0])
+        tokens = lang_util.tokenize(cur_example)
+        user_inputs.append(cur_example)
+        tokens_list.append(tokens)
+        if len(row) == 2:
+            intents.append(row[1])
+        elif len(row) == 1:
+            intents.append(OFFTOPIC_LABEL)
 
     test_df = pd.DataFrame(
         data={"utterance": user_inputs, "intent": intents, "tokens": tokens_list}
