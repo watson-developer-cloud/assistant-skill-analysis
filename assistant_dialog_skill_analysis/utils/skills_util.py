@@ -178,9 +178,10 @@ def process_test_set(test_set, lang_util, delim="\t", cos=False):
     user_inputs = list()
     intents = list()
     tokens_list = list()
+    file_handle = None
     if not cos:
-        with open(test_set, "r", encoding="utf-8") as ts:
-            reader = csv.reader(ts, delimiter=delim)
+        file_handle = open(test_set, "r", encoding="utf-8")
+        reader = csv.reader(file_handle, delimiter=delim)
     else:
         reader = csv.reader(codecs.getreader("utf-8")(test_set), delimiter=delim)
 
@@ -195,6 +196,8 @@ def process_test_set(test_set, lang_util, delim="\t", cos=False):
             intents.append(row[1])
         elif len(row) == 1:
             intents.append(OFFTOPIC_LABEL)
+    if file_handle:
+        file_handle.close()
 
     test_df = pd.DataFrame(
         data={"utterance": user_inputs, "intent": intents, "tokens": tokens_list}
