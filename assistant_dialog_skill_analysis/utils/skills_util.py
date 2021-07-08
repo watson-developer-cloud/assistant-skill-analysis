@@ -16,7 +16,7 @@ from ibm_cloud_sdk_core.authenticators import (
     NoAuthAuthenticator,
 )
 
-
+DEV_DATACENTER = ('https://api.us-south.assistant.dev.watson.cloud.ibm.com', 'https://iam.test.cloud.ibm.com/identity/token')
 DEFAULT_API_VERSION = "2019-02-28"
 DEFAULT_PROD_URL = "https://gateway.watsonplatform.net/assistant/api"
 DEFAULT_USERNAME = "apikey"
