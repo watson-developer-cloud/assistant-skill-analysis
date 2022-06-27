@@ -4,7 +4,7 @@ import sys
 from nltk.stem.snowball import SnowballStemmer
 from spacy.tokenizer import Tokenizer
 import unicodedata
-import assistant_dialog_skill_analysis
+import assistant_skill_analysis
 
 
 SUPPORTED_LANGUAGE = ["en", "fr", "de", "cs", "es", "it", "pt"]
@@ -37,7 +37,7 @@ class LanguageUtility:
         self.punctuation_pattern = re.compile("|".join(PUNCTUATION))
         self.stemmer = None
         stopwords_path = os.path.join(
-            os.path.dirname(assistant_dialog_skill_analysis.__file__),
+            os.path.dirname(assistant_skill_analysis.__file__),
             "resources",
             self.language_code,
             "stopwords",

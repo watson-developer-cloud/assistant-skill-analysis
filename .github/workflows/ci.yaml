@@ -25,13 +25,13 @@ jobs:
           export PYTHONPATH=`pwd`
       - name: style-check
         run: |
-          black --check assistant_dialog_skill_analysis
+          black --check assistant_skill_analysis
       - name: parse secrets
         env:
           WA_CONFIG: ${{secrets.WA_CONFIG}}
           WA_CONFIG_ACTION: ${{secrets.WA_CONFIG_ACTION}}
         run: |
-          python -m assistant_dialog_skill_analysis.utils.parse_secret
+          python -m assistant_skill_analysis.utils.parse_secret
       - name: unittest
         run: |
           pytest tests

@@ -2,6 +2,7 @@ import time
 import threading
 import _thread
 import traceback
+import ibm_watson
 
 from ..utils import skills_util
 
@@ -17,11 +18,13 @@ class InferenceThread(threading.Thread):
         name,
         que,
         conversation,
-        workspace_id,
         result,
         max_retries=10,
         verbose=False,
         user_id="256",
+        assistant_id=None,
+        workspace_id=None,
+        intent_to_action_mapping=None,
     ):
         """
         Initialize inferencer
@@ -34,7 +37,16 @@ class InferenceThread(threading.Thread):
         :param max_retries:
         :param verbose:
         :param user_id:
+        :param assistant_id:
+        :param intent_to_action_mapping:
         """
+        if isinstance(conversation, ibm_watson.AssistantV1):
+            assert workspace_id is not None
+            self.sdk_version = "V1"
+        else:
+            assert assistant_id is not None
+            self.sdk_version = "V2"
+
         threading.Thread.__init__(self)
         self.thread_id = thread_id
         self.name = name
@@ -45,6 +57,8 @@ class InferenceThread(threading.Thread):
         self.max_retries = max_retries
         self.verbose = verbose
         self.user_id = user_id
+        self.assistant_id = assistant_id
+        self.intent_to_action_mapping = intent_to_action_mapping
         self.exitflag = 0
 
     def run(self):
@@ -73,13 +87,29 @@ class InferenceThread(threading.Thread):
                     attempt += 1
                     try:
                         response = skills_util.retrieve_classifier_response(
-                            self.conversation,
-                            self.workspace_id,
-                            query_question,
+                            conversation=self.conversation,
+                            text_input=query_question,
                             alternate_intents=True,
                             user_id=self.user_id,
+                            assistant_id=self.assistant_id,
+                            workspace_id=self.workspace_id,
                         )
                         time.sleep(0.2)
+                        if self.sdk_version == "V2":
+                            response = response["output"]
+                            # v2 api returns all intent predictions
+                            if (
+                                response["intents"][0]["confidence"]
+                                < skills_util.OFFTOPIC_CONF_THRESHOLD
+                            ):
+                                response["intents"] = []
+                            for intents_prediction in response["intents"]:
+                                intents_prediction[
+                                    "intent"
+                                ] = self.intent_to_action_mapping[
+                                    intents_prediction["intent"]
+                                ]
+
                         if response["intents"]:
                             top_predicts = response["intents"]
                             top_intent = response["intents"][0]["intent"]

@@ -1,7 +1,7 @@
 import unittest
 import math
 import pandas as pd
-from assistant_dialog_skill_analysis.confidence_analysis.confidence_analyzer import (
+from assistant_skill_analysis.confidence_analysis.confidence_analyzer import (
     _get_far_list,
     _get_ontopic_accuracy_list,
     _find_threshold,
@@ -15,7 +15,7 @@ from assistant_dialog_skill_analysis.confidence_analysis.confidence_analyzer imp
     extract_by_topic,
     create_display_table,
 )
-from assistant_dialog_skill_analysis.utils.skills_util import OFFTOPIC_LABEL
+from assistant_skill_analysis.utils.skills_util import OFFTOPIC_LABEL
 
 
 class TestThresholdAnalysis(unittest.TestCase):

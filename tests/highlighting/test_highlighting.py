@@ -5,9 +5,10 @@ import shutil
 import numpy as np
 import pandas as pd
 
-from assistant_dialog_skill_analysis.highlighting import highlighter
-from assistant_dialog_skill_analysis.inferencing import inferencer
-from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
+from assistant_skill_analysis.highlighting import highlighter
+from assistant_skill_analysis.inferencing import inferencer
+from assistant_skill_analysis.utils import skills_util, lang_utils
+
 
 CONFIG_FILE = "./wa_config.txt"
 THREAD_NUM = 5
@@ -29,30 +30,34 @@ class TestHighLighting(unittest.TestCase):
     Test for summary generator module
     """
 
-    def setUp(self):
-        self.tmpfolder = "tests/resources/highlight_temp_folder/"
-        self.tmpbatchfolder = "tests/resources/highlight_temp_folder/batch"
-        self.input_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
-        self.lang_util = lang_utils.LanguageUtility("en")
-        unittest.TestCase.setUp(self)
+    @classmethod
+    def setUpClass(cls):
+        cls.tmpfolder = "tests/resources/highlight_temp_folder/"
+        cls.tmpbatchfolder = "tests/resources/highlight_temp_folder/batch"
+        cls.input_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
+        cls.lang_util = lang_utils.LanguageUtility("en")
+        unittest.TestCase.setUp(cls)
         with open(CONFIG_FILE) as fi:
-            self.apikey = fi.readline().strip()
-            self.wksp_id = fi.readline().strip()
+            cls.apikey = fi.readline().strip()
+            cls.wksp_id = fi.readline().strip()
 
-        self.conversation = skills_util.retrieve_conversation(iam_apikey=self.apikey)
+        cls.conversation = skills_util.retrieve_conversation(iam_apikey=cls.apikey,
+                                                             url=skills_util.DEV_DATACENTER[0],
+                                                             authenticator_url=skills_util.DEV_DATACENTER[1],
+                                                             )
 
-        if not os.path.exists(self.tmpfolder):
-            os.makedirs(self.tmpfolder)
-            os.makedirs(self.tmpbatchfolder)
+        if not os.path.exists(cls.tmpfolder):
+            os.makedirs(cls.tmpfolder)
+            os.makedirs(cls.tmpbatchfolder)
 
-        test_df = skills_util.process_test_set(self.input_file, self.lang_util)
-        self.results = inferencer.inference(
-            self.conversation,
-            self.wksp_id,
+        test_df = skills_util.process_test_set(cls.input_file, cls.lang_util)
+        cls.results = inferencer.inference(
+            cls.conversation,
             test_df,
             max_retries=20,
             max_thread=THREAD_NUM,
             verbose=False,
+            workspace_id=cls.wksp_id,
         )
 
     def test_filter_results(self):
@@ -99,8 +104,8 @@ class TestHighLighting(unittest.TestCase):
 
     def test_adversarial_examples_multi_thread_inference(self):
         long_example1 = (
-            "um taking a shot here um lets say three "
-            + "separate people whos wills are to each other"
+                "um taking a shot here um lets say three "
+                + "separate people whos wills are to each other"
         )
         wrong_examples_sorted = [
             (
@@ -144,7 +149,6 @@ class TestHighLighting(unittest.TestCase):
         )
 
     def test_scoring_function(self):
-
         highlight = np.zeros(3, dtype="float32")
         highlight = highlighter._scoring_function(
             highlight=highlight,
@@ -197,15 +201,14 @@ class TestHighLighting(unittest.TestCase):
         )
 
     def test_get_highlights_in_batch_multi_thread(self):
-
         highlighter.get_highlights_in_batch_multi_thread(
-            self.conversation,
-            self.wksp_id,
-            self.results,
-            self.tmpbatchfolder,
-            0.4,
-            3,
-            self.lang_util,
+            conversation=self.conversation,
+            full_results=self.results,
+            output_folder=self.tmpbatchfolder,
+            confidence_threshold=0.4,
+            show_worst_k=3,
+            lang_util=self.lang_util,
+            workspace_id=self.wksp_id,
         )
         self.assertEqual(
             len(os.listdir(self.tmpbatchfolder)),
@@ -213,9 +216,10 @@ class TestHighLighting(unittest.TestCase):
             "# of batch highlighting files is mismatched.",
         )
 
-    def tearDown(self):
-        shutil.rmtree(self.tmpfolder)
-        unittest.TestCase.tearDown(self)
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmpfolder)
+        unittest.TestCase.tearDown(cls)
 
 
 if __name__ == "__main__":

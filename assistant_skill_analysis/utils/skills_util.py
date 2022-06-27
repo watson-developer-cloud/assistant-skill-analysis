@@ -20,13 +20,16 @@ DEV_DATACENTER = (
     "https://api.us-south.assistant.dev.watson.cloud.ibm.com",
     "https://iam.test.cloud.ibm.com/identity/token",
 )
-DEFAULT_API_VERSION = "2019-02-28"
+DEFAULT_V1_API_VERSION = "2019-02-28"
+DEFAULT_V2_API_VERSION = "2021-11-27"
 DEFAULT_PROD_URL = "https://gateway.watsonplatform.net/assistant/api"
 DEFAULT_USERNAME = "apikey"
 STAGE_IAM_URL = "https://iam.stage1.bluemix.net/identity/token"
 DEFAULT_AUTHENTICATOR_URL = "https://iam.cloud.ibm.com/identity/token"
 
 OFFTOPIC_LABEL = "SYSTEM_OUT_OF_DOMAIN"
+
+OFFTOPIC_CONF_THRESHOLD = 0.2
 
 LABEL_FONT = {"family": "normal", "weight": "bold", "size": 17}
 
@@ -92,22 +95,28 @@ def create_workspace(conversation, intent_json=None):
     return response
 
 
-def input_credentials():
+def input_credentials(apikey=True, workspace_id=True, assistant_id=False):
     """
     Prompt user to enter apikey and workspace id
     """
-    apikey = getpass.getpass("Please enter apikey: ")
-    workspace_id = getpass.getpass("Please enter workspace-id: ")
-    return apikey, workspace_id
+    apikey, workspace_id, assistant_id = None, None, None
+    if apikey:
+        apikey = getpass.getpass("Please enter apikey: ")
+    if workspace_id:
+        workspace_id = getpass.getpass("Please enter workspace-id: ")
+    if assistant_id:
+        assistant_id = getpass.getpass("Please enter assistant-id: ")
+    return apikey, workspace_id, assistant_id
 
 
 def retrieve_conversation(
     iam_apikey=None,
     url=DEFAULT_PROD_URL,
-    api_version=DEFAULT_API_VERSION,
+    api_version=None,
     username=DEFAULT_USERNAME,
     password=None,
     authenticator_url=DEFAULT_AUTHENTICATOR_URL,
+    sdk_version="V1",
 ):
     """
     Retrieve workspace from Assistant instance
@@ -116,9 +125,15 @@ def retrieve_conversation(
     :param api_version:
     :param username:
     :param password:
+    :param sdk_version: V2 is needed for action workspaces
     :return workspace: workspace json
     """
-
+    assert sdk_version in ["V1", "V2"]
+    if api_version is None:
+        if sdk_version == "V1":
+            api_version = DEFAULT_V1_API_VERSION
+        else:
+            api_version = DEFAULT_V2_API_VERSION
     if iam_apikey:
         authenticator = IAMAuthenticator(apikey=iam_apikey, url=authenticator_url)
     elif username and password:
@@ -126,9 +141,15 @@ def retrieve_conversation(
     else:
         authenticator = NoAuthAuthenticator()
 
-    conversation = ibm_watson.AssistantV1(
-        authenticator=authenticator, version=api_version
-    )
+    if sdk_version == "V1":
+        conversation = ibm_watson.AssistantV1(
+            authenticator=authenticator, version=api_version
+        )
+    else:
+        conversation = ibm_watson.AssistantV2(
+            authenticator=authenticator, version=api_version
+        )
+
     conversation.set_service_url(url)
 
     return conversation
@@ -146,27 +167,72 @@ def retrieve_workspace(workspace_id, conversation, export_flag=True):
     return ws_json.get_result()
 
 
+def parse_workspace_json(workspace_json):
+    """
+    Parse workspace json and returns list of utterances, list of intents, and list of entities, and intent to action title mapping
+    """
+    ws_type = workspace_json.get("type", "dialog")
+    dialog_setting_action_flag = (
+        workspace_json.get("dialog_settings", {}).get("actions", "").lower() == "true"
+    )
+    if dialog_setting_action_flag:
+        ws_type = "action"
+    utterances, intents, entities = [], [], []
+    raw_intent_name_to_action_title_mapping = None
+
+    if ws_type == "dialog":
+
+        for intent in workspace_json["intents"]:
+            for example in intent["examples"]:
+                utterances.append(example["text"])
+                intents.append(intent["intent"])
+        entities = workspace_json["entities"]
+
+    else:
+        # intent name to action title mapping for readability
+        raw_intent_name_to_action_title_mapping = {
+            action["condition"]["intent"]: action["title"]
+            for action in workspace_json["workspace"]["actions"]
+            if action.get("condition", {}).get("intent")
+        }
+        for intent in workspace_json["workspace"]["intents"]:
+            action_title = raw_intent_name_to_action_title_mapping[intent["intent"]]
+            for example in intent["examples"]:
+                utterances.append(example["text"])
+                intents.append(action_title)
+        entities = workspace_json["workspace"]["entities"]
+    return utterances, intents, entities, raw_intent_name_to_action_title_mapping
+
+
 def extract_workspace_data(workspace, language_util):
     """
     Extract relevant data and vocabulary
-    :param workspace:
+    :param workspace: workspace json, could be from an action skill or a dialog skill
     :param language_util:
-    :return: workspace_pd, vocabulary
+    :return: workspace_pd, vocabulary, entities, intent name to action title mapping
     """
     relevant_data = {"utterance": list(), "intent": list(), "tokens": list()}
     vocabulary = set()
-    for i in range(len(workspace["intents"])):
-        current_intent = workspace["intents"][i]["intent"]
-        for j in range(len(workspace["intents"][i]["examples"])):
-            current_example = workspace["intents"][i]["examples"][j]["text"]
-            current_example = language_util.preprocess(current_example)
-            relevant_data["utterance"].append(current_example)
-            relevant_data["intent"].append(current_intent)
-            tokens = language_util.tokenize(current_example)
-            relevant_data["tokens"].append(tokens)
-            vocabulary.update(tokens)
+    (
+        utterances,
+        intents,
+        entities,
+        raw_intent_name_to_action_title_mapping,
+    ) = parse_workspace_json(workspace)
+
+    for utterance, intent in zip(utterances, intents):
+        # preprocess utterance
+        utterance = language_util.preprocess(utterance)
+        tokens = language_util.tokenize(utterance)
+
+        relevant_data["utterance"].append(utterance)
+        relevant_data["intent"].append(intent)
+        relevant_data["tokens"].append(tokens)
+
+        vocabulary.update(tokens)
+
     workspace_pd = pd.DataFrame(relevant_data)
-    return workspace_pd, vocabulary
+    return workspace_pd, vocabulary, entities, raw_intent_name_to_action_title_mapping
 
 
 def process_test_set(test_set, lang_util, delim="\t", cos=False):
@@ -222,21 +288,33 @@ def export_workspace(conversation, experiment_workspace_id, export_path):
         json.dump(response, outfile)
 
 
-def run_notebook(notebook_path, iam_apikey, wksp_id, test_file, output_path):
+def run_notebook(
+    notebook_path,
+    iam_apikey,
+    test_file,
+    output_path,
+    wksp_id=None,
+    assistant_id=None,
+    action_wksp_json_path=None,
+):
     """
     Run notebook for end to end test
     :param notebook_path:
     :param uname:
     :param pwd:
     :param wksp_id:
+    :param assistant_id:
     :param test_file:
+    :param action_wksp_json_path:
     :param output_path:
     """
     notebook_name, _ = os.path.splitext(os.path.basename(notebook_path))
 
     with open(notebook_path) as f:
         nb = nbformat.read(f, as_version=4)
-    nb, old_cred_text = _replace_nb_input(nb, iam_apikey, wksp_id, test_file)
+    nb, old_cred_text = _replace_nb_input(
+        nb, iam_apikey, test_file, wksp_id, assistant_id, action_wksp_json_path
+    )
     # nb = _remove_experimentation(nb)
 
     proc = ExecutePreprocessor(timeout=60 * 60, kernel_name="python3")
@@ -257,17 +335,23 @@ def run_notebook(notebook_path, iam_apikey, wksp_id, test_file, output_path):
     return nb, errors
 
 
-def _replace_nb_input(nb, apikey, wksp_id, test_file):
+def _replace_nb_input(
+    nb, apikey, test_file, wksp_id=None, assistant_id=None, action_wksp_json_path=None
+):
     """
     Replace notebook interactive input for tests
     :param nb:
     :param uname:
     :param pwd:
     :param wksp_id:
+    :param assistant_id:
+    :param action_wksp_json_path:
     :param test_file:
     """
     apikey_patt = "iam_apikey = "
     wksp_id_patt = "workspace_id = "
+    assistant_id_patt = "ASSISTANT_ID = "
+    action_wksp_json_patt = "ACTION_SKILL_FILENAME = "
     test_file_name_patt = "test_set_path = "
     old_cred_text = ""
     test_urls = '"' + DEV_DATACENTER[0] + '",' + '"' + DEV_DATACENTER[1] + '"'
@@ -284,11 +368,29 @@ def _replace_nb_input(nb, apikey, wksp_id, test_file):
                 r"\1" + apikey_patt + "'" + apikey + "'" + r"\2",
                 text,
             )  # replace pwd
-            text = re.sub(
-                "(.*)#" + wksp_id_patt + "'###'(.*)",
-                r"\1" + wksp_id_patt + "'" + wksp_id + "'" + r"\2",
-                text,
-            )  # replace wksp_id
+            if wksp_id:
+                text = re.sub(
+                    "(.*)#" + wksp_id_patt + "'###'(.*)",
+                    r"\1" + wksp_id_patt + "'" + wksp_id + "'" + r"\2",
+                    text,
+                )  # replace wksp_id
+            if assistant_id:
+                text = re.sub(
+                    "(.*)#" + assistant_id_patt + "'###'(.*)",
+                    r"\1" + assistant_id_patt + "'" + assistant_id + "'" + r"\2",
+                    text,
+                )  # replace assistant_id
+            if action_wksp_json_path:
+                text = re.sub(
+                    "(.*)" + action_wksp_json_patt + "'###'(.*)",
+                    r"\1"
+                    + action_wksp_json_patt
+                    + "'"
+                    + action_wksp_json_path
+                    + "'"
+                    + r"\2",
+                    text,
+                )  # replace action workspace json path
             cell["source"] = text
         elif "source" in cell and test_file_name_patt in cell["source"]:
             text = re.sub(
@@ -321,7 +423,12 @@ def _remove_experimentation(nb):
 
 
 def retrieve_classifier_response(
-    conversation, workspace_id, text_input, alternate_intents=False, user_id="256"
+    conversation,
+    text_input,
+    alternate_intents=False,
+    user_id="256",
+    assistant_id=None,
+    workspace_id=None,
 ):
     """
     retrieve classifier response
@@ -330,12 +437,26 @@ def retrieve_classifier_response(
     :param text_input: the input utterance
     :param alternate_intents:
     :param user_id:
+    :param assistant_id:
     :return response:
     """
-    response = conversation.message(
-        input={"message_type": "text", "text": text_input},
-        context={"metadata": {"user_id": user_id}},
-        workspace_id=workspace_id,
-        alternate_intents=alternate_intents,
-    ).get_result()
+    if isinstance(conversation, ibm_watson.AssistantV1):
+        assert workspace_id is not None
+        response = conversation.message(
+            input={"message_type": "text", "text": text_input},
+            context={"metadata": {"user_id": user_id}},
+            workspace_id=workspace_id,
+            alternate_intents=alternate_intents,
+        ).get_result()
+    else:
+        assert assistant_id is not None
+        response = conversation.message_stateless(
+            input={
+                "message_type": "text",
+                "text": text_input,
+                "options": {"alternate_intents": alternate_intents},
+            },
+            context={"metadata": {"user_id": user_id}},
+            assistant_id=assistant_id,
+        ).get_result()
     return response
