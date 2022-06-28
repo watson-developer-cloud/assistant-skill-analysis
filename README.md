@@ -1,3 +1,5 @@
+[![test env](https://github.com/watson-developer-cloud/assistant-dialog-skill-analysis/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/watson-developer-cloud/assistant-dialog-skill-analysis/actions/workflows/ci.yaml)
+
 # Dialog Skill Analysis for Watson Assistant
 
 ## Introduction
