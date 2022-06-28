@@ -11,6 +11,7 @@ class TestNotebook(unittest.TestCase):
             self.wksp_id = fi.readline().strip()
 
     def test_notebook(self):
+        assert 1 == 2
         test_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
         nb, errors = skills_util.run_notebook(
             "skill_analysis.ipynb",
