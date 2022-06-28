@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from IPython.display import display, Markdown
 
-import nltk
 import seaborn as sns
 import matplotlib.pyplot as plt
 
