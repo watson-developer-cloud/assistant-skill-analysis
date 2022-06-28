@@ -23,6 +23,7 @@ def compare(a, b):
     return True
 
 
+@unittest.skip("takes too long to run in github action")
 class TestHighLighting(unittest.TestCase):
     """
     Test for summary generator module

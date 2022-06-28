@@ -1,0 +1,37 @@
+name: test env
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black==22.3.0
+          pip install pytest
+          pip install -r requirements.txt
+          export PYTHONPATH=`pwd`
+      - name: style-check
+        run: |
+          black --check assistant_dialog_skill_analysis
+      - name: parse secrets
+        env:
+          WA_CONFIG: ${{secrets.WA_CONFIG}}
+          WA_CONFIG_ACTION: ${{secrets.WA_CONFIG_ACTION}}
+        run: |
+          python -m assistant_dialog_skill_analysis.utils.parse_secret
+      - name: unittest
+        run: |
+          pytest tests

@@ -70,7 +70,9 @@ def _compute_chi2_top_feature(
 
 
 def get_chi2_analysis(
-    workspace_pd, lang_util, significance_level=0.05,
+    workspace_pd,
+    lang_util,
+    significance_level=0.05,
 ):
     """
     find correlated unigram and bigram of each intent with Chi2 analysis
