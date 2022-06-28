@@ -95,16 +95,18 @@ def create_workspace(conversation, intent_json=None):
     return response
 
 
-def input_credentials(apikey=True, workspace_id=True, assistant_id=False):
+def input_credentials(
+    input_apikey=True, input_workspace_id=True, input_assistant_id=False
+):
     """
     Prompt user to enter apikey and workspace id
     """
     apikey, workspace_id, assistant_id = None, None, None
-    if apikey:
+    if input_apikey:
         apikey = getpass.getpass("Please enter apikey: ")
-    if workspace_id:
+    if input_workspace_id:
         workspace_id = getpass.getpass("Please enter workspace-id: ")
-    if assistant_id:
+    if input_assistant_id:
         assistant_id = getpass.getpass("Please enter assistant-id: ")
     return apikey, workspace_id, assistant_id
 
@@ -172,8 +174,8 @@ def parse_workspace_json(workspace_json):
     Parse workspace json and returns list of utterances, list of intents, and list of entities, and intent to action title mapping
     """
     ws_type = workspace_json.get("type", "dialog")
-    dialog_setting_action_flag = (
-        workspace_json.get("dialog_settings", {}).get("actions", "").lower() == "true"
+    dialog_setting_action_flag = bool(
+        workspace_json.get("dialog_settings", {}).get("actions", False)
     )
     if dialog_setting_action_flag:
         ws_type = "action"
