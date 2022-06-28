@@ -16,7 +16,10 @@ from ibm_cloud_sdk_core.authenticators import (
     NoAuthAuthenticator,
 )
 
-DEV_DATACENTER = ('https://api.us-south.assistant.dev.watson.cloud.ibm.com', 'https://iam.test.cloud.ibm.com/identity/token')
+DEV_DATACENTER = (
+    "https://api.us-south.assistant.dev.watson.cloud.ibm.com",
+    "https://iam.test.cloud.ibm.com/identity/token",
+)
 DEFAULT_API_VERSION = "2019-02-28"
 DEFAULT_PROD_URL = "https://gateway.watsonplatform.net/assistant/api"
 DEFAULT_USERNAME = "apikey"
@@ -267,12 +270,14 @@ def _replace_nb_input(nb, apikey, wksp_id, test_file):
     wksp_id_patt = "workspace_id = "
     test_file_name_patt = "test_set_path = "
     old_cred_text = ""
+    test_urls = '"' + DEV_DATACENTER[0] + '",' + '"' + DEV_DATACENTER[1] + '"'
     for cell in nb.cells:
         if "source" in cell and apikey_patt in cell["source"]:
             old_cred_text = cell["source"]
             text = re.sub(
                 "(.*)\niam_apikey, (.*)", (r"\1\n#iam_apikey, \2"), cell["source"]
             )  # comment out input_credentials
+            text = re.sub("datacenters\['dallas'\]", test_urls, text)
 
             text = re.sub(
                 "(.*)#" + apikey_patt + "'###'(.*)",
@@ -287,7 +292,7 @@ def _replace_nb_input(nb, apikey, wksp_id, test_file):
             cell["source"] = text
         elif "source" in cell and test_file_name_patt in cell["source"]:
             text = re.sub(
-                "(.*)\n" + test_file_name_patt + "'test_set.tsv'(.*)",
+                "(.*)\n" + test_file_name_patt + '"./test.tsv"(.*)',
                 r"\1\n" + test_file_name_patt + "'" + test_file + "'" + r"\2",
                 cell["source"],
             )  # replace test file
