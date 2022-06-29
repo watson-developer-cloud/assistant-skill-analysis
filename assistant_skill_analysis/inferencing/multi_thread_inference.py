@@ -1,3 +1,4 @@
+import sys
 import time
 import threading
 import _thread
@@ -134,6 +135,9 @@ class InferenceThread(threading.Thread):
                         }
                         self.result.append(new_dict)
                         success_flag = True
+                    except KeyboardInterrupt as e:
+                        self.join()
+                        sys.exit(e)
                     except Exception:
                         if self.verbose:
                             traceback.print_exc()
@@ -142,7 +146,7 @@ class InferenceThread(threading.Thread):
                                     self.name, query_question, i
                                 )
                             )
-                        time.sleep(0.2)
+                        time.sleep(0.1)
 
                 if attempt >= self.max_retries:
                     print(
