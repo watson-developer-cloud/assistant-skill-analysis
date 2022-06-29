@@ -10,7 +10,7 @@ from ..inferencing.multi_thread_inference import InferenceThread
 def inference(
     conversation,
     test_data,
-    max_retries=10,
+    max_retries=5,
     max_thread=5,
     verbose=False,
     user_id="256",
