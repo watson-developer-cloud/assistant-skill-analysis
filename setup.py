@@ -22,11 +22,11 @@ VERSION = find_version()
 REQUIREMENTS = get_requirements()
 
 setup(
-    name='assistant_dialog_skill_analysis',
+    name='assistant_skill_analysis',
     version=VERSION,
     author='Haode Qi, Navneet Rao, Ming Tan, Yang Yu, Panos Karagiannis and Ladislav Kunc',
     author_email='nrao@us.ibm.com',
-    description='Dialog Skill Analysis Tool for Watson Assistant',
+    description='Dialog/Action Skill Analysis Tool for Watson Assistant',
     url='https://github.com/watson-developer-cloud/assistant-dialog-skill-analysis',
     license='Apache License 2.0',
     install_requires=REQUIREMENTS,

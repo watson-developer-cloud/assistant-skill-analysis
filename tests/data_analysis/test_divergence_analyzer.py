@@ -2,32 +2,32 @@ import unittest
 import json
 import pandas as pd
 import numpy as np
-from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
-from assistant_dialog_skill_analysis.data_analysis import divergence_analyzer
+from assistant_skill_analysis.utils import skills_util, lang_utils
+from assistant_skill_analysis.data_analysis import divergence_analyzer
 
 
 class TestDivergenceAnalyzer(unittest.TestCase):
     """Test for Divergence Analyzer module"""
 
-    def setUp(self):
-        unittest.TestCase.setUp(self)
-        self.lang_util = lang_utils.LanguageUtility("en")
+    @classmethod
+    def setUpClass(cls):
+        cls.lang_util = lang_utils.LanguageUtility("en")
         with open(
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
         ) as skill_file:
-            workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
-                json.load(skill_file), self.lang_util
+            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
+                json.load(skill_file), cls.lang_util
             )
 
-            self.workspace_df = pd.DataFrame(workspace_data)
-            self.train_set_pd = pd.DataFrame(
+            cls.workspace_df = pd.DataFrame(workspace_data)
+            cls.train_set_pd = pd.DataFrame(
                 {
                     "utterance": ["boston is close to new york"],
                     "intent": ["Boston_New_York"],
                     "tokens": [["boston", "is", "close", "to", "new", "york"]],
                 }
             )
-            self.test_set_pd = pd.DataFrame(
+            cls.test_set_pd = pd.DataFrame(
                 {
                     "utterance": [
                         "both boston and new york are on east coast",
@@ -57,7 +57,7 @@ class TestDivergenceAnalyzer(unittest.TestCase):
         self.assertEqual(
             np.all(label_percentage_vec > 0), True, "label percentage test fail"
         )
-        self.assertEqual(np.sum(label_percentage_vec), 1, "label percentage test fail")
+        self.assertAlmostEqual(np.sum(label_percentage_vec), 1, delta=1e-6)
 
     def test_train_test_vocab_difference(self):
         train_vocab, test_vocab = divergence_analyzer._train_test_vocab_difference(

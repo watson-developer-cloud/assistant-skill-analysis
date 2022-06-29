@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 from IPython.display import display, Markdown
 
-import nltk
 import seaborn as sns
 import matplotlib.pyplot as plt
+
+import ibm_watson
 
 from ..utils import skills_util
 from ..inferencing import inferencer
@@ -17,12 +18,14 @@ NGRAM_RANGE = [1]
 
 def get_highlights_in_batch_multi_thread(
     conversation,
-    workspace_id,
     full_results,
     output_folder,
     confidence_threshold,
     show_worst_k,
     lang_util,
+    workspace_id=None,
+    assistant_id=None,
+    intent_to_action_mapping=None,
 ):
     """
     Given the prediction result, rank prediction results from worst to best
@@ -34,8 +37,15 @@ def get_highlights_in_batch_multi_thread(
     :param output_folder: the output folder where the highlighting images will be saved
     :param confidence_threshold: the confidence threshold for offtopic detection
     :param show_worst_k: the top worst k results based on heuristics
+    :param assistant_id:
+    :param intent_to_action_mapping:
     :return:
     """
+    if isinstance(conversation, ibm_watson.AssistantV1):
+        assert workspace_id is not None
+    else:
+        assert assistant_id is not None
+        assert intent_to_action_mapping is not None
     wrong_examples_sorted = _filter_results(
         full_results, confidence_threshold, lang_util
     )
@@ -54,7 +64,11 @@ def get_highlights_in_batch_multi_thread(
         adversarial_results,
         adversarial_span_dict,
     ) = _adversarial_examples_multi_thread_inference(
-        wrong_examples_sorted, conversation, workspace_id
+        wrong_examples_sorted=wrong_examples_sorted,
+        conversation=conversation,
+        workspace_id=workspace_id,
+        assistant_id=assistant_id,
+        intent_to_action_mapping=intent_to_action_mapping,
     )
 
     if not adversarial_results.empty:
@@ -225,14 +239,25 @@ def _plot_highlight(highlight, original_example, output_folder, lang_util):
 
 
 def _adversarial_examples_multi_thread_inference(
-    wrong_examples_sorted, conversation, workspace_id
+    wrong_examples_sorted,
+    conversation,
+    workspace_id=None,
+    assistant_id=None,
+    intent_to_action_mapping=None,
 ):
     """
     Perform multi threaded inference on all the adversarial examples
     :param wrong_examples_sorted:
     :param conversation:
     :param workspace_id:
+    :param assistant_id:
+    :param intent_to_action_mapping:
     """
+    if isinstance(conversation, ibm_watson.AssistantV1):
+        assert workspace_id is not None
+    else:
+        assert assistant_id is not None
+        assert intent_to_action_mapping is not None
     all_adversarial_examples = list()
     # the adversarial labels will be label\tidx for later regrouping purposes
     all_adversarial_label_idx = list()
@@ -260,12 +285,14 @@ def _adversarial_examples_multi_thread_inference(
         {"utterance": all_adversarial_examples, "intent": all_adversarial_label_idx}
     )
     adversarial_results = inferencer.inference(
-        conversation,
-        workspace_id,
-        adversarial_test_data_frame,
+        conversation=conversation,
+        test_data=adversarial_test_data_frame,
         max_retries=10,
         max_thread=5,
         verbose=False,
+        workspace_id=workspace_id,
+        assistant_id=assistant_id,
+        intent_to_action_mapping=intent_to_action_mapping,
     )
     display(Markdown("   "))
     return adversarial_results, adversarial_span_dict

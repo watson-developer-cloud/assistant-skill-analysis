@@ -3,8 +3,8 @@ import json
 import pandas as pd
 import numpy as np
 
-from assistant_dialog_skill_analysis.data_analysis import similarity_analyzer
-from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
+from assistant_skill_analysis.data_analysis import similarity_analyzer
+from assistant_skill_analysis.utils import skills_util, lang_utils
 
 TOLERANCE = 0.0000001
 
@@ -12,15 +12,16 @@ TOLERANCE = 0.0000001
 class TestSimilarityAnalzyer(unittest.TestCase):
     """Test for Similarity Analyzer module"""
 
-    def setUp(self):
-        self.lang_util = lang_utils.LanguageUtility("en")
+    @classmethod
+    def setUpClass(cls):
+        cls.lang_util = lang_utils.LanguageUtility("en")
         with open(
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
         ) as skill_file:
-            workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
-                json.load(skill_file), self.lang_util
+            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
+                json.load(skill_file), cls.lang_util
             )
-            self.workspace_df = pd.DataFrame(workspace_data)
+            cls.workspace_df = pd.DataFrame(workspace_data)
 
     def test_calculate_cosine_similarity(self):
         feature_matrix1 = np.array([[1, 2, 0], [0, 0, 1], [1, 2, 0]])

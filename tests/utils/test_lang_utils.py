@@ -1,13 +1,13 @@
 import unittest
-from assistant_dialog_skill_analysis.utils.lang_utils import LanguageUtility
+from assistant_skill_analysis.utils.lang_utils import LanguageUtility
 
 
 class TestLangUtils(unittest.TestCase):
     """Test for lang utils module"""
 
-    def setUp(self):
-        unittest.TestCase.setUp(self)
-        self.skill_file = open(
+    @classmethod
+    def setUpClass(cls):
+        cls.skill_file = open(
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
         )
 

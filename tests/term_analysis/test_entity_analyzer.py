@@ -2,8 +2,8 @@ import unittest
 import json
 import pandas as pd
 
-from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
-from assistant_dialog_skill_analysis.term_analysis import entity_analyzer
+from assistant_skill_analysis.utils import skills_util, lang_utils
+from assistant_skill_analysis.term_analysis import entity_analyzer
 
 
 class TestChi2Analyzer(unittest.TestCase):
@@ -11,17 +11,17 @@ class TestChi2Analyzer(unittest.TestCase):
     Test for Chi2 Analyzer module
     """
 
-    def setUp(self):
-        unittest.TestCase.setUp(self)
+    @classmethod
+    def setUpClass(cls):
         test_skill_file = (
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json"
         )
         with open(test_skill_file, "r") as skill_file:
-            workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
+            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
                 json.load(skill_file), lang_utils.LanguageUtility("en")
             )
-            self.workspace_df = pd.DataFrame(workspace_data)
-            self.mock_test_result = pd.DataFrame(
+            cls.workspace_df = pd.DataFrame(workspace_data)
+            cls.mock_test_result = pd.DataFrame(
                 {
                     "correct_intent": ["intent1", "intent2"],
                     "entities": [

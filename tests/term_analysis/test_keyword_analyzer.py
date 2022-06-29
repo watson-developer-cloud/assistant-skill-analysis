@@ -1,11 +1,10 @@
-import sys
 import unittest
 import json
 import numpy as np
 import pandas as pd
 
-from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
-from assistant_dialog_skill_analysis.term_analysis import keyword_analyzer
+from assistant_skill_analysis.utils import skills_util, lang_utils
+from assistant_skill_analysis.term_analysis import keyword_analyzer
 
 
 class TestKeywordAnalyzer(unittest.TestCase):
@@ -13,18 +12,18 @@ class TestKeywordAnalyzer(unittest.TestCase):
     Test for Key Word Analyzer module
     """
 
-    def setUp(self):
-        unittest.TestCase.setUp(self)
-        self.lang_util = lang_utils.LanguageUtility("en")
+    @classmethod
+    def setUpClass(cls):
+        cls.lang_util = lang_utils.LanguageUtility("en")
         test_skill_file = (
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json"
         )
         with open(test_skill_file, "r") as skill_file:
-            workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
-                json.load(skill_file), self.lang_util
+            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
+                json.load(skill_file), cls.lang_util
             )
-            self.workspace_df = pd.DataFrame(workspace_data)
-            self.test_data = pd.DataFrame(
+            cls.workspace_df = pd.DataFrame(workspace_data)
+            cls.test_data = pd.DataFrame(
                 {
                     "utterance": [
                         "Boston is the capital city of massachusetts ",

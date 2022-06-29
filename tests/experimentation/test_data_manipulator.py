@@ -4,23 +4,23 @@ import json
 import numpy as np
 import pandas as pd
 
-from assistant_dialog_skill_analysis.utils import skills_util, lang_utils
-from assistant_dialog_skill_analysis.experimentation import data_manipulator
+from assistant_skill_analysis.utils import skills_util, lang_utils
+from assistant_skill_analysis.experimentation import data_manipulator
 
 
 class TestDataManipulator(unittest.TestCase):
     """Test for Data manipulator module"""
 
-    def setUp(self):
-        unittest.TestCase.setUp(self)
+    @classmethod
+    def setUpClass(cls):
         with open(
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
         ) as skill_file:
-            self.workspace = json.load(skill_file)
-            workspace_data, workspace_vocabulary = skills_util.extract_workspace_data(
-                self.workspace, lang_utils.LanguageUtility("en")
+            cls.workspace = json.load(skill_file)
+            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
+                cls.workspace, lang_utils.LanguageUtility("en")
             )
-            self.workspace_df = pd.DataFrame(workspace_data)
+            cls.workspace_df = pd.DataFrame(workspace_data)
 
     def test_undersampling(self):
         quantile = 0.6

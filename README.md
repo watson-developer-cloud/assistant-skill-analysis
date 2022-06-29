@@ -1,9 +1,9 @@
 [![test env](https://github.com/watson-developer-cloud/assistant-dialog-skill-analysis/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/watson-developer-cloud/assistant-dialog-skill-analysis/actions/workflows/ci.yaml)
 
-# Dialog Skill Analysis for Watson Assistant
+# Dialog/Action Skill Analysis for Watson Assistant
 
 ## Introduction
-Dialog Skill Analysis is a Python framework along with an easy-to-use Python notebook to help you quickly and effectively build AI assistants using Watson Assistant 
+Dialog/Action Skill Analysis is a Python framework along with an easy-to-use Python notebook to help you quickly and effectively build AI assistants using Watson Assistant 
 
 Whether you are new to the process and are building your first AI assistant or you’re a veteran and have an assistant working well in production, this framework is intended to help everyone with questions like...
 - How do I know my assistant is doing a good job?
@@ -22,7 +22,7 @@ session below on [Hosted Python Notebook](#hosted-python-notebook)
 2. Assumes a Python 3.6 or greater environment (We recommend using Anaconda to setup a python environment)
 3. Install dependencies with `pip install -r requirements.txt`
 4. Start jupyter server with `jupyter notebook`
-5. Run `skill_analysis.ipynb` to start session
+5. Run `dialog_skill_analysis.ipynb` or `action_skill_analysis.ipynb` to start session
 
 ## Guides
 An introduction to Dialog Skill Analysis on Medium: [Announcing Dialog Skill Analysis](https://medium.com/ibm-watson/announcing-dialog-skill-analysis-for-watson-assistant-83cdfb968178?)
