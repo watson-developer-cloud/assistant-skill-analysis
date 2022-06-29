@@ -33,9 +33,16 @@ An introduction to Dialog Skill Analysis on Medium: [Announcing Dialog Skill Ana
 ## Hosted Python Notebook
 For those of you familiar with IBM Watson Studio, we have also made a hosted version of the notebook available on the IBM Gallery: [Hosted Dialog Skill Analysis Notebook](https://dataplatform.cloud.ibm.com/exchange/public/entry/view/4d77701840fcb2f21587e39fdb887049)
 
-## Contributor List
+## Current Contributor List
+
+| |                                                                                                                                                         |                                                                                                                                                         |
+:-------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------:|
+<img src="https://avatars1.githubusercontent.com/u/41268579" alt="Haode Qi Avatar" width=100/> <br/> <b>[Haode Qi](https://github.com/haodeqi)<b>  | <img src="https://avatars.githubusercontent.com/u/20978879" alt="Cheng Qian Avatar" width=100/> <br/> <b>[Cheng Qian](https://github.com/tsinggggg)<b>  | <img src="https://avatars0.githubusercontent.com/u/55497265" alt="Ladislav Kunc Avatar" width=100/> <br/> <b>[Ladislav Kunc](https://github.com/lada-kunc)<b> |
+
+
+## Previous Contributor List
 
 | | | |
 :-------------------------:|:-------------------------:|:-------------------------:|
-<img src="https://avatars1.githubusercontent.com/u/41268579" alt="Haode Qi Avatar" width=100/> <br/> <b>[Haode Qi](https://github.com/haodeqi)<b> | <img src="https://avatars0.githubusercontent.com/u/55497265" alt="Ladislav Kunc Avatar" width=100/> <br/> <b>[Ladislav Kunc](https://github.com/lada-kunc)<b> | <img src="https://avatars0.githubusercontent.com/u/10625921" alt="Ming Tan Avatar" width=100/> <br/> <b>[Ming Tan](https://github.com/mingtan888)<b> |
-<img src="https://avatars0.githubusercontent.com/u/5985542" alt="Navneet Rao Avatar" width=100/> <br/> <b>[Navneet Rao](https://github.com/navneetrao)<b> | <img src="https://avatars2.githubusercontent.com/u/21293612" alt="Panos Karagiannis Avatar" width=100/> <br/> <b>[Panos Karagiannis](https://github.com/apropos13)<b> | <img src="https://avatars0.githubusercontent.com/u/12615278" alt="Yang Yu Avatar" width=100/> <br/> <b>[Yang Yu](https://github.com/yangyuphd)<b> |
+<img src="https://avatars2.githubusercontent.com/u/21293612" alt="Panos Karagiannis Avatar" width=100/> <br/> <b>[Panos Karagiannis](https://github.com/apropos13)<b> | <img src="https://avatars0.githubusercontent.com/u/10625921" alt="Ming Tan Avatar" width=100/> <br/> <b>[Ming Tan](https://github.com/mingtan888)<b> |
+<img src="https://avatars0.githubusercontent.com/u/5985542" alt="Navneet Rao Avatar" width=100/> <br/> <b>[Navneet Rao](https://github.com/navneetrao)<b>| <img src="https://avatars0.githubusercontent.com/u/12615278" alt="Yang Yu Avatar" width=100/> <br/> <b>[Yang Yu](https://github.com/yangyuphd)<b> |
