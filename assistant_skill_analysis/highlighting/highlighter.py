@@ -287,9 +287,7 @@ def _adversarial_examples_multi_thread_inference(
     adversarial_results = inferencer.inference(
         conversation=conversation,
         test_data=adversarial_test_data_frame,
-        max_retries=10,
-        max_thread=5,
-        verbose=False,
+        max_thread=min(4, os.cpu_count() if os.cpu_count() else 1),
         workspace_id=workspace_id,
         assistant_id=assistant_id,
         intent_to_action_mapping=intent_to_action_mapping,

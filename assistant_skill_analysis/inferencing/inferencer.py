@@ -1,18 +1,18 @@
 import time
-import queue
 import pandas as pd
 import numpy as np
 import ibm_watson
 from ..utils import skills_util
-from ..inferencing.multi_thread_inference import InferenceThread
+from concurrent.futures import ThreadPoolExecutor
+from tqdm import tqdm
+
+MAX_RETRY = 5
 
 
 def inference(
     conversation,
     test_data,
-    max_retries=5,
     max_thread=5,
-    verbose=False,
     user_id="256",
     assistant_id=None,
     workspace_id=None,
@@ -23,7 +23,6 @@ def inference(
     :parameter: conversation: the conversation object produced by AssistantV1 api
     :parameter: workspace_id: the workspace id of the
     :parameter: test_data: the data that will be sent to the classifier
-    :parameter: max_retries: the maximum number of retries
     :parameter: max_thread: the max number of threads to use for multi-threaded inference
     :parameter: verbose: flag indicates verbosity of outputs during mutli-threaded inference
     :parameter: assistant_id:
@@ -45,7 +44,7 @@ def inference(
             test_data["utterance"], test_data["intent"]
         ):
             attempt = 1
-            while attempt <= max_retries:
+            while attempt <= MAX_RETRY:
                 try:
                     prediction_json = skills_util.retrieve_classifier_response(
                         conversation=conversation,
@@ -64,11 +63,11 @@ def inference(
                     break
                 attempt += 1
 
-                if attempt > max_retries:
+                if attempt > MAX_RETRY:
                     reach_max_retry = True
 
             if reach_max_retry:
-                raise Exception("Maximum attempt of {} has reached".format(max_retries))
+                raise Exception("Maximum attempt of {} has reached".format(MAX_RETRY))
 
             if skd_version == "V2":
                 prediction_json = prediction_json["output"]
@@ -112,9 +111,7 @@ def inference(
         result_df = thread_inference(
             conversation=conversation,
             test_data=test_data,
-            max_retries=max_retries,
             max_thread=max_thread,
-            verbose=verbose,
             user_id=user_id,
             workspace_id=workspace_id,
             assistant_id=assistant_id,
@@ -126,9 +123,7 @@ def inference(
 def thread_inference(
     conversation,
     test_data,
-    max_retries=10,
     max_thread=5,
-    verbose=False,
     user_id="256",
     assistant_id=None,
     workspace_id=None,
@@ -139,7 +134,6 @@ def thread_inference(
     :param conversation:
     :param workspace_id: Assistant workspace id
     :param test_data: data to test on
-    :param max_retries: max retries for each call
     :param max_thread: max threads to use
     :param verbose: verbosity of output
     :param user_id: user_id for billing purpose
@@ -149,68 +143,127 @@ def thread_inference(
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
         assert workspace_id is not None
+        sdk_version = "V1"
     else:
         assert assistant_id is not None
+        sdk_version = "V2"
+    count = 0
+    response = None
+    while count < MAX_RETRY and not response:
+        try:
+            response = skills_util.retrieve_classifier_response(
+                conversation=conversation,
+                text_input="ping",
+                alternate_intents=True,
+                user_id=user_id,
+                assistant_id=assistant_id,
+                workspace_id=workspace_id,
+            )
+        except Exception:
+            count += 1
+            time.sleep(0.5)
 
-    if max_thread > 5:
-        print("only maximum of 5 threads are allowed")
-    thread_list = ["Thread-1", "Thread-2", "Thread-3", "Thread-4", "Thread-5"]
-    thread_list = thread_list[:max_thread]
-
-    query_queue = queue.Queue(0)
-    threads = []
-    thread_id = 1
-    result = list()
-
-    start_time = time.time()
-
-    for i in range(len(test_data)):
-        data_point = [test_data["utterance"].iloc[i], test_data["intent"].iloc[i]]
-        query_queue.put(data_point)
-
-    # Create new threads
-    for thread_name in thread_list:
-        thread = InferenceThread(
-            thread_id=thread_id,
-            name=thread_name,
-            que=query_queue,
+    executor = ThreadPoolExecutor(max_workers=max_thread)
+    futures = {}
+    result = []
+    for test_example, ground_truth in zip(test_data["utterance"], test_data["intent"]):
+        future = executor.submit(
+            get_intent_confidence_retry,
             conversation=conversation,
-            result=result,
-            max_retries=max_retries,
-            verbose=verbose,
+            text_input=test_example,
+            alternative_intents=True,
             user_id=user_id,
-            workspace_id=workspace_id,
             assistant_id=assistant_id,
-            intent_to_action_mapping=intent_to_action_mapping,
+            workspace_id=workspace_id,
+            retry=0,
         )
-        thread.start()
-        threads.append(thread)
-        thread_id += 1
+        futures[future] = (test_example, ground_truth)
 
-    while len(result) != len(test_data):
-        pass
+    for future in tqdm(futures):
+        res = future.result(timeout=1)
+        test_example, ground_truth = futures[future]
+        result.append(
+            process_result(
+                test_example,
+                ground_truth,
+                res,
+                intent_to_action_mapping,
+                sdk_version=sdk_version,
+            )
+        )
 
-    for thread in threads:
-        thread.join()
-
-    print("--- Total time: {} seconds ---".format(time.time() - start_time))
     result_df = pd.DataFrame(data=result)
     return result_df
 
 
-def get_intents_confidences(conversation, workspace_id, text_input):
-    """
-    Retrieve a list of confidence for analysis purpose
-    :param conversation: conversation instance
-    :param workspace_id: workspace id
-    :param text_input: input utterance
-    :return intent_conf: intent confidences
-    """
-    response_info = skills_util.retrieve_classifier_response(
-        conversation, workspace_id, text_input, True
-    )["intents"]
-    intent_conf = [(r["intent"], r["confidence"]) for r in response_info]
-    return intent_conf
+def process_result(
+    utterance, ground_truth, response, intent_to_action_mapping, sdk_version
+):
+    if sdk_version == "V2":
+        response = response["output"]
+        # v2 api returns all intent predictions
+        if response["intents"][0]["confidence"] < skills_util.OFFTOPIC_CONF_THRESHOLD:
+            response["intents"] = []
+        for intents_prediction in response["intents"]:
+            intents_prediction["intent"] = intent_to_action_mapping[
+                intents_prediction["intent"]
+            ]
+    if response["intents"]:
+        top_predicts = response["intents"]
+        top_intent = response["intents"][0]["intent"]
+        top_confidence = response["intents"][0]["confidence"]
+    else:
+        top_predicts = []
+        top_intent = skills_util.OFFTOPIC_LABEL
+        top_confidence = 0
+
+    if response["entities"]:
+        entities = response["entities"]
+    else:
+        entities = []
+
+    new_dict = {
+        "utterance": utterance,
+        "correct_intent": ground_truth,
+        "top_intent": top_intent,
+        "top_confidence": top_confidence,
+        "top_predicts": top_predicts,
+        "entities": entities,
+    }
+    return new_dict
+
+
+def get_intent_confidence_retry(
+    conversation,
+    text_input,
+    alternative_intents,
+    user_id,
+    assistant_id,
+    workspace_id,
+    retry=0,
+):
+    try:
+        return skills_util.retrieve_classifier_response(
+            conversation=conversation,
+            text_input=text_input,
+            alternate_intents=True,
+            user_id=user_id,
+            assistant_id=assistant_id,
+            workspace_id=workspace_id,
+        )
+    except Exception as e:
+        if retry < MAX_RETRY:
+            return get_intent_confidence_retry(
+                conversation,
+                text_input,
+                alternative_intents,
+                user_id,
+                assistant_id,
+                workspace_id,
+                retry=retry + 1,
+            )
+        else:
+            raise e
 
 
 def calculate_mistakes(results):
