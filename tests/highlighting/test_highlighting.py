@@ -54,9 +54,7 @@ class TestHighLighting(unittest.TestCase):
         cls.results = inferencer.inference(
             cls.conversation,
             test_df,
-            max_retries=20,
             max_thread=THREAD_NUM,
-            verbose=False,
             workspace_id=cls.wksp_id,
         )
 

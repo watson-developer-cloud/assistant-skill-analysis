@@ -16,6 +16,7 @@ from ibm_cloud_sdk_core.authenticators import (
     NoAuthAuthenticator,
 )
 
+
 DEV_DATACENTER = (
     "https://api.us-south.assistant.dev.watson.cloud.ibm.com",
     "https://iam.test.cloud.ibm.com/identity/token",
@@ -264,7 +265,7 @@ def process_test_set(test_set, lang_util, delim="\t", cos=False):
         user_inputs.append(cur_example)
         tokens_list.append(tokens)
         if len(row) == 2:
-            intents.append(row[1])
+            intents.append(row[1].strip())
         elif len(row) == 1:
             intents.append(OFFTOPIC_LABEL)
     if file_handle:
