@@ -95,6 +95,7 @@ class LanguageUtility:
 
             self.tokenizer = Tokenizer(Dutch().vocab)
             self.stemmer = SnowballStemmer(language="dutch")
+            self.stop_words = self.load_stop_words(stopwords_path)
         else:
             raise Exception("language code %s is not supported", self.language_code)
 
@@ -110,6 +111,8 @@ class LanguageUtility:
         stopwords = set()
         with open(path, "r", encoding="utf-8") as file:
             for line in file:
+                if line.startswith("#"):
+                    continue
                 line = line.strip()
                 stopwords.add(line)
         return stopwords
