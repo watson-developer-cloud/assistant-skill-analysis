@@ -7,7 +7,7 @@ import unicodedata
 import assistant_skill_analysis
 
 
-SUPPORTED_LANGUAGE = ["en", "fr", "de", "cs", "es", "it", "pt"]
+SUPPORTED_LANGUAGE = ["en", "fr", "de", "cs", "es", "it", "pt", "nl"]
 PUNCTUATION = [
     "\\" + chr(i)
     for i in range(sys.maxunicode)
@@ -89,6 +89,13 @@ class LanguageUtility:
             self.tokenizer = Tokenizer(Spanish().vocab)
             self.stemmer = SnowballStemmer(language="spanish")
             self.stop_words = self.load_stop_words(stopwords_path)
+
+        elif self.language_code == "nl":
+            from spacy.lang.nl import Dutch
+
+            self.tokenizer = Tokenizer(Dutch().vocab)
+            self.stemmer = SnowballStemmer(language="dutch")
+            self.stop_words = self.load_stop_words(stopwords_path)
         else:
             raise Exception("language code %s is not supported", self.language_code)
 
@@ -104,6 +111,8 @@ class LanguageUtility:
         stopwords = set()
         with open(path, "r", encoding="utf-8") as file:
             for line in file:
+                if line.startswith("#"):
+                    continue
                 line = line.strip()
                 stopwords.add(line)
         return stopwords
