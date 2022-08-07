@@ -11,11 +11,11 @@ Whether you are new to the process and are building your first AI assistant or y
 - Why is the assistant responding incorrectly to this question?
 - How do I improve my assistant’s ability to understand questions?
 
-Currently Supported Languages: en, fr, cs, de, es, fr, it, pt
+Currently Supported Languages: en, fr, cs, de, es, it, pt, nl
 
 ## Usage
 If you clone the notebook from this repository locally, please use the steps below. For usage in Watson studio, please refer to the 
-session below on [Hosted Python Notebook](#hosted-python-notebook)
+section below on [Hosted Python Notebook](#hosted-python-notebook)
 
 
 1. Assumes familiarity using a Python Jupyter notebook
