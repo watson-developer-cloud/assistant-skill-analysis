@@ -15,6 +15,7 @@ from ibm_cloud_sdk_core.authenticators import (
     BasicAuthenticator,
     NoAuthAuthenticator,
     CloudPakForDataAuthenticator,
+    BearerTokenAuthenticator,
 )
 
 
@@ -122,6 +123,7 @@ def retrieve_conversation(
     authenticator_url=DEFAULT_AUTHENTICATOR_URL,
     sdk_version="V1",
     cp4d_auth=False,
+    bearer_token=None,
 ):
     """
     Retrieve workspace from Assistant instance
@@ -148,6 +150,8 @@ def retrieve_conversation(
             )
         else:
             authenticator = BasicAuthenticator(username=username, password=password)
+    elif bearer_token is not None:
+        authenticator = BearerTokenAuthenticator(bearer_token=bearer_token)
     else:
         authenticator = NoAuthAuthenticator()
 
