@@ -144,9 +144,7 @@ def retrieve_conversation(
     elif username and password:
         if cp4d_auth:
             authenticator = CloudPakForDataAuthenticator(
-                username=username,
-                password=password,
-                url=authenticator_url
+                username=username, password=password, url=authenticator_url
             )
         else:
             authenticator = BasicAuthenticator(username=username, password=password)
