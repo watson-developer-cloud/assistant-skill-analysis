@@ -108,13 +108,13 @@ class LanguageUtility:
         return sentence
 
     def load_stop_words(self, path):
-        stopwords = set()
+        stopwords = []
         with open(path, "r", encoding="utf-8") as file:
             for line in file:
                 if line.startswith("#"):
                     continue
                 line = line.strip()
-                stopwords.add(line)
+                stopwords.append(line)
         return stopwords
 
     def strip_punctuations(self, sentence):
