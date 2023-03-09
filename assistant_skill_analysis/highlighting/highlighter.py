@@ -23,7 +23,7 @@ def get_highlights_in_batch_multi_thread(
     confidence_threshold,
     show_worst_k,
     lang_util,
-    workspace_id=None,
+    skill_id=None,
     assistant_id=None,
     intent_to_action_mapping=None,
 ):
@@ -32,7 +32,7 @@ def get_highlights_in_batch_multi_thread(
     & analyze the top k worst results.
     Term level highlighting on the worst results shows the sensitivity of terms in utterance
     :param conversation: conversation object produced by watson api
-    :param workspace_id: workspace id
+    :param skill_id: workspace id
     :param full_results: prediction result showing the ranked list of intents by confidence scores
     :param output_folder: the output folder where the highlighting images will be saved
     :param confidence_threshold: the confidence threshold for offtopic detection
@@ -42,7 +42,7 @@ def get_highlights_in_batch_multi_thread(
     :return:
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
-        assert workspace_id is not None
+        assert skill_id is not None
     else:
         assert assistant_id is not None
         assert intent_to_action_mapping is not None
@@ -66,7 +66,7 @@ def get_highlights_in_batch_multi_thread(
     ) = _adversarial_examples_multi_thread_inference(
         wrong_examples_sorted=wrong_examples_sorted,
         conversation=conversation,
-        workspace_id=workspace_id,
+        skill_id=skill_id,
         assistant_id=assistant_id,
         intent_to_action_mapping=intent_to_action_mapping,
     )
@@ -241,7 +241,7 @@ def _plot_highlight(highlight, original_example, output_folder, lang_util):
 def _adversarial_examples_multi_thread_inference(
     wrong_examples_sorted,
     conversation,
-    workspace_id=None,
+    skill_id=None,
     assistant_id=None,
     intent_to_action_mapping=None,
 ):
@@ -249,12 +249,12 @@ def _adversarial_examples_multi_thread_inference(
     Perform multi threaded inference on all the adversarial examples
     :param wrong_examples_sorted:
     :param conversation:
-    :param workspace_id:
+    :param skill_id:
     :param assistant_id:
     :param intent_to_action_mapping:
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
-        assert workspace_id is not None
+        assert skill_id is not None
     else:
         assert assistant_id is not None
         assert intent_to_action_mapping is not None
@@ -288,7 +288,7 @@ def _adversarial_examples_multi_thread_inference(
         conversation=conversation,
         test_data=adversarial_test_data_frame,
         max_thread=min(4, os.cpu_count() if os.cpu_count() else 1),
-        workspace_id=workspace_id,
+        skill_id=skill_id,
         assistant_id=assistant_id,
         intent_to_action_mapping=intent_to_action_mapping,
     )
