@@ -32,7 +32,7 @@ def get_highlights_in_batch_multi_thread(
     & analyze the top k worst results.
     Term level highlighting on the worst results shows the sensitivity of terms in utterance
     :param conversation: conversation object produced by watson api
-    :param skill_id: workspace id
+    :param skill_id: skill id
     :param full_results: prediction result showing the ranked list of intents by confidence scores
     :param output_folder: the output folder where the highlighting images will be saved
     :param confidence_threshold: the confidence threshold for offtopic detection

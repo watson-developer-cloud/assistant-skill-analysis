@@ -447,7 +447,7 @@ def retrieve_classifier_response(
     """
     retrieve classifier response
     :param conversation: instance
-    :param skill_id: workspace or skill id
+    :param skill_id: skill id
     :param text_input: the input utterance
     :param alternate_intents:
     :param user_id:
