@@ -1656,7 +1656,7 @@
       "dialog_node": "Opening"
     }
   ],
-  "workspace_id": "d9bf7322-df44-4384-bc02-8a3c4d201426",
+  "skill_id": "d9bf7322-df44-4384-bc02-8a3c4d201426",
   "counterexamples": [],
   "learning_opt_out": false,
   "status": "Available"

@@ -55,7 +55,7 @@ class TestHighLighting(unittest.TestCase):
             cls.conversation,
             test_df,
             max_thread=THREAD_NUM,
-            workspace_id=cls.wksp_id,
+            skill_id=cls.wksp_id,
         )
 
     def test_filter_results(self):
@@ -206,7 +206,7 @@ class TestHighLighting(unittest.TestCase):
             confidence_threshold=0.4,
             show_worst_k=3,
             lang_util=self.lang_util,
-            workspace_id=self.wksp_id,
+            skill_id=self.wksp_id,
         )
         self.assertEqual(
             len(os.listdir(self.tmpbatchfolder)),

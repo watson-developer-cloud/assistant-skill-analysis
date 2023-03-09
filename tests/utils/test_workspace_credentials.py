@@ -27,7 +27,7 @@ class TestWorkspaceCredential(unittest.TestCase):
                                              authenticator_url=DEV_DATACENTER[1],
                                              )
         ws_json = retrieve_workspace(
-            workspace_id=self.wksp_id, conversation=conversation
+            skill_id=self.wksp_id, conversation=conversation
         )
         self.assertTrue(len(ws_json["intents"]) == 9)
 

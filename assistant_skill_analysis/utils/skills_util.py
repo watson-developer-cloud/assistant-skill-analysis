@@ -99,19 +99,19 @@ def create_workspace(conversation, intent_json=None):
 
 
 def input_credentials(
-    input_apikey=True, input_workspace_id=True, input_assistant_id=False
+    input_apikey=True, input_skill_id=True, input_assistant_id=False
 ):
     """
-    Prompt user to enter apikey and workspace id
+    Prompt user to enter apikey and skill id (workspace_id)
     """
-    apikey, workspace_id, assistant_id = None, None, None
+    apikey, skill_id, assistant_id = None, None, None
     if input_apikey:
         apikey = getpass.getpass("Please enter apikey: ")
-    if input_workspace_id:
-        workspace_id = getpass.getpass("Please enter workspace-id: ")
+    if input_skill_id:
+        skill_id = getpass.getpass("Please enter skill-id (workspace_id): ")
     if input_assistant_id:
         assistant_id = getpass.getpass("Please enter assistant-id: ")
-    return apikey, workspace_id, assistant_id
+    return apikey, skill_id, assistant_id
 
 
 def retrieve_conversation(
@@ -169,15 +169,15 @@ def retrieve_conversation(
     return conversation
 
 
-def retrieve_workspace(workspace_id, conversation, export_flag=True):
+def retrieve_workspace(skill_id, conversation, export_flag=True):
     """
     retrieve the workspace based on the workspace id
-    :param workspace_id:
+    :param skill_id:
     :param conversation:
     :param export_flag:
     :return: workspace_dictionary
     """
-    ws_json = conversation.get_workspace(workspace_id, export=export_flag)
+    ws_json = conversation.get_workspace(skill_id, export=export_flag)
     return ws_json.get_result()
 
 
@@ -288,15 +288,15 @@ def process_test_set(test_set, lang_util, delim="\t", cos=False):
     return test_df
 
 
-def export_workspace(conversation, experiment_workspace_id, export_path):
+def export_workspace(conversation, experiment_skill_id, export_path):
     """
     Export the workspace to target path
     :param conversation: conversation object output by assistant api
-    :param experiment_workspace_id: id of the experimental workspace
+    :param experiment_skill_id: id of the experimental workspace
     :param export_path: the path where the exported workspace will be saved
     """
     response = conversation.get_workspace(
-        workspace_id=experiment_workspace_id, export=True
+        skill_id=experiment_skill_id, export=True
     ).get_result()
     with open(export_path, "w+", encoding="utf-8") as outfile:
         json.dump(response, outfile)
@@ -363,7 +363,7 @@ def _replace_nb_input(
     :param test_file:
     """
     apikey_patt = "iam_apikey = "
-    wksp_id_patt = "workspace_id = "
+    wksp_id_patt = "skill_id = "
     assistant_id_patt = "ASSISTANT_ID = "
     action_wksp_json_patt = "ACTION_SKILL_FILENAME = "
     test_file_name_patt = "test_set_path = "
@@ -442,12 +442,12 @@ def retrieve_classifier_response(
     alternate_intents=False,
     user_id="256",
     assistant_id=None,
-    workspace_id=None,
+    skill_id=None,
 ):
     """
     retrieve classifier response
     :param conversation: instance
-    :param workspace_id: workspace or skill id
+    :param skill_id: skill id
     :param text_input: the input utterance
     :param alternate_intents:
     :param user_id:
@@ -455,11 +455,11 @@ def retrieve_classifier_response(
     :return response:
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
-        assert workspace_id is not None
+        assert skill_id is not None
         response = conversation.message(
             input={"message_type": "text", "text": text_input},
             context={"metadata": {"user_id": user_id}},
-            workspace_id=workspace_id,
+            skill_id=skill_id,
             alternate_intents=alternate_intents,
         ).get_result()
     else:

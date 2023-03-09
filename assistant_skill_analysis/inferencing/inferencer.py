@@ -15,13 +15,13 @@ def inference(
     max_thread=5,
     user_id="256",
     assistant_id=None,
-    workspace_id=None,
+    skill_id=None,
     intent_to_action_mapping=None,
 ):
     """
     query the message api to generate results on the test data
     :parameter: conversation: the conversation object produced by AssistantV1 api
-    :parameter: workspace_id: the workspace id of the
+    :parameter: skill_id: the workspace id of the
     :parameter: test_data: the data that will be sent to the classifier
     :parameter: max_thread: the max number of threads to use for multi-threaded inference
     :parameter: verbose: flag indicates verbosity of outputs during mutli-threaded inference
@@ -31,7 +31,7 @@ def inference(
     """
     skd_version = "V1"
     if isinstance(conversation, ibm_watson.AssistantV1):
-        assert workspace_id is not None
+        assert skill_id is not None
     else:
         assert assistant_id is not None
         assert intent_to_action_mapping is not None
@@ -52,7 +52,7 @@ def inference(
                         alternate_intents=True,
                         user_id=user_id,
                         assistant_id=assistant_id,
-                        workspace_id=workspace_id,
+                        skill_id=skill_id,
                     )
                     time.sleep(0.3)
 
@@ -113,7 +113,7 @@ def inference(
             test_data=test_data,
             max_thread=max_thread,
             user_id=user_id,
-            workspace_id=workspace_id,
+            skill_id=skill_id,
             assistant_id=assistant_id,
             intent_to_action_mapping=intent_to_action_mapping,
         )
@@ -126,13 +126,13 @@ def thread_inference(
     max_thread=5,
     user_id="256",
     assistant_id=None,
-    workspace_id=None,
+    skill_id=None,
     intent_to_action_mapping=None,
 ):
     """
     Perform multi thread inference for faster inference time
     :param conversation:
-    :param workspace_id: Assistant workspace id
+    :param skill_id: Assistant workspace id
     :param test_data: data to test on
     :param max_thread: max threads to use
     :param verbose: verbosity of output
@@ -142,7 +142,7 @@ def thread_inference(
     :return result_df: results dataframe
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
-        assert workspace_id is not None
+        assert skill_id is not None
         sdk_version = "V1"
     else:
         assert assistant_id is not None
@@ -157,7 +157,7 @@ def thread_inference(
                 alternate_intents=True,
                 user_id=user_id,
                 assistant_id=assistant_id,
-                workspace_id=workspace_id,
+                skill_id=skill_id,
             )
         except Exception:
             count += 1
@@ -174,7 +174,7 @@ def thread_inference(
             alternative_intents=True,
             user_id=user_id,
             assistant_id=assistant_id,
-            workspace_id=workspace_id,
+            skill_id=skill_id,
             retry=0,
         )
         futures[future] = (test_example, ground_truth)
@@ -239,7 +239,7 @@ def get_intent_confidence_retry(
     alternative_intents,
     user_id,
     assistant_id,
-    workspace_id,
+    skill_id,
     retry=0,
 ):
     try:
@@ -249,7 +249,7 @@ def get_intent_confidence_retry(
             alternate_intents=True,
             user_id=user_id,
             assistant_id=assistant_id,
-            workspace_id=workspace_id,
+            skill_id=skill_id,
         )
     except Exception as e:
         if retry < MAX_RETRY:
@@ -259,7 +259,7 @@ def get_intent_confidence_retry(
                 alternative_intents,
                 user_id,
                 assistant_id,
-                workspace_id,
+                skill_id,
                 retry=retry + 1,
             )
         else:
