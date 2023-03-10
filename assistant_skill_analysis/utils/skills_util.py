@@ -459,7 +459,7 @@ def retrieve_classifier_response(
         response = conversation.message(
             input={"message_type": "text", "text": text_input},
             context={"metadata": {"user_id": user_id}},
-            skill_id=skill_id,
+            workspace_id=skill_id,
             alternate_intents=alternate_intents,
         ).get_result()
     else:
