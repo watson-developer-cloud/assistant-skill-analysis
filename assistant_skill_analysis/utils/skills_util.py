@@ -98,9 +98,7 @@ def create_workspace(conversation, intent_json=None):
     return response
 
 
-def input_credentials(
-    input_apikey=True, input_skill_id=True, input_assistant_id=False
-):
+def input_credentials(input_apikey=True, input_skill_id=True, input_assistant_id=False):
     """
     Prompt user to enter apikey and skill id (workspace_id)
     """
