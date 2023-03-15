@@ -45,7 +45,6 @@ def get_highlights_in_batch_multi_thread(
         assert skill_id is not None
     else:
         assert assistant_id is not None
-        assert intent_to_action_mapping is not None
     wrong_examples_sorted = _filter_results(
         full_results, confidence_threshold, lang_util
     )
@@ -104,7 +103,17 @@ def _filter_results(full_results, confidence_threshold, lang_util):
     for idx in range(len(full_results)):
         item = full_results.iloc[idx]
         results_intent_list = [predict["intent"] for predict in item["top_predicts"]]
-        result_dict = dict(item["top_predicts"])
+        if not item["top_predicts"]:
+            result_dict = {}
+        elif (
+            isinstance(item["top_predicts"], list)
+            and "intent" in item["top_predicts"][0]
+        ):
+            result_dict = {
+                pred["intent"]: pred["confidence"] for pred in item["top_predicts"]
+            }
+        else:
+            result_dict = dict(item["top_predicts"])
         if item["correct_intent"] in results_intent_list:
             reference_position = results_intent_list.index(item["correct_intent"])
         else:
@@ -257,7 +266,6 @@ def _adversarial_examples_multi_thread_inference(
         assert skill_id is not None
     else:
         assert assistant_id is not None
-        assert intent_to_action_mapping is not None
     all_adversarial_examples = list()
     # the adversarial labels will be label\tidx for later regrouping purposes
     all_adversarial_label_idx = list()

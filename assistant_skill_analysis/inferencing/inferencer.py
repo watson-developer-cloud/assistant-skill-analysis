@@ -34,7 +34,6 @@ def inference(
         assert skill_id is not None
     else:
         assert assistant_id is not None
-        assert intent_to_action_mapping is not None
         skd_version = "V2"
 
     if max_thread == 1:
@@ -78,11 +77,11 @@ def inference(
                         < skills_util.OFFTOPIC_CONF_THRESHOLD
                     ):
                         prediction_json["intents"] = []
-
-                for intents_prediction in prediction_json["intents"]:
-                    intents_prediction["intent"] = intent_to_action_mapping[
-                        intents_prediction["intent"]
-                    ]
+                if intent_to_action_mapping is not None:
+                    for intents_prediction in prediction_json["intents"]:
+                        intents_prediction["intent"] = intent_to_action_mapping[
+                            intents_prediction["intent"]
+                        ]
 
             if not prediction_json["intents"]:
                 responses.append(
@@ -201,13 +200,17 @@ def process_result(
 ):
     if sdk_version == "V2":
         response = response["output"]
-        # v2 api returns all intent predictions
-        if response["intents"][0]["confidence"] < skills_util.OFFTOPIC_CONF_THRESHOLD:
+        if (
+            not response["intents"]
+            or response["intents"][0]["confidence"]
+            < skills_util.OFFTOPIC_CONF_THRESHOLD
+        ):
             response["intents"] = []
-        for intents_prediction in response["intents"]:
-            intents_prediction["intent"] = intent_to_action_mapping[
-                intents_prediction["intent"]
-            ]
+        if intent_to_action_mapping is not None:
+            for intents_prediction in response["intents"]:
+                intents_prediction["intent"] = intent_to_action_mapping[
+                    intents_prediction["intent"]
+                ]
     if response["intents"]:
         top_predicts = response["intents"]
         top_intent = response["intents"][0]["intent"]

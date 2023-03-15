@@ -22,10 +22,11 @@ section below on [Hosted Python Notebook](#hosted-python-notebook)
 2. Assumes a Python 3.9 or greater environment (We recommend using Anaconda to setup a python environment)
 3. Install dependencies with `pip install -r requirements.txt`
 4. Start jupyter server with `jupyter notebook`
-5. Run `dialog_skill_analysis.ipynb` or `action_skill_analysis.ipynb` to start session
+5. Run `classic_dialog_skill_analysis.ipynb` or `new_experience_skill_analysis.ipynb` to start session
 
-## Update: June 29th 2022
-A new [Action Notebook](https://github.com/watson-developer-cloud/assistant-dialog-skill-analysis/blob/master/action_skill_analysis.ipynb) is now available!
+## Update: March 15th 2023
+`new_experience_skill_analysis.ipynb` for dialog or action analysis under new Watson Assistant experience is available.
+
 
 ## Guides
 An introduction to Dialog Skill Analysis on Medium: [Announcing Dialog Skill Analysis](https://medium.com/ibm-watson/announcing-dialog-skill-analysis-for-watson-assistant-83cdfb968178?)
