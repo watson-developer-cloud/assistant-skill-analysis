@@ -27,7 +27,7 @@ class TestChi2Analyzer(unittest.TestCase):
             test_data, self.lang_util
         )
         self.assertEqual(
-            set(convec.get_feature_names()),
+            set(convec.get_feature_names_out()),
             set(["this", "boston", "this boston"]),
             "Test for chi2 analyzer fail",
         )
@@ -36,7 +36,7 @@ class TestChi2Analyzer(unittest.TestCase):
             self.workspace_df, self.lang_util
         )
         max_len = 0
-        for ngram in convec.get_feature_names():
+        for ngram in convec.get_feature_names_out():
             if len(ngram.split(" ")) > max_len:
                 max_len = len(ngram.split(" "))
         assert max_len <= 2
