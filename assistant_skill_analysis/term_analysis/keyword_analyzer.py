@@ -38,7 +38,7 @@ def _preprocess_for_heat_map(
                 workspace_df, lang_util=lang_util, unigrams_col_name="unigrams"
             )
 
-    max_n = np.int(
+    max_n = int(
         np.ceil(max_token_display / len(counts.index.get_level_values(0).unique()))
     )
     top_counts = _get_top_n(counts["n_w"], top_n=max_n)

@@ -44,7 +44,7 @@ def _compute_chi2_top_feature(
     """
     features_chi2, pval = chi2(features, labels == cls)
 
-    feature_names = np.array(vectorizer.get_feature_names())
+    feature_names = np.array(vectorizer.get_feature_names_out())
 
     features_chi2 = features_chi2[pval < significance_level]
     feature_names = feature_names[pval < significance_level]
