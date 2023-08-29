@@ -15,9 +15,12 @@ class TestDivergenceAnalyzer(unittest.TestCase):
         with open(
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
         ) as skill_file:
-            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
-                json.load(skill_file), cls.lang_util
-            )
+            (
+                workspace_data,
+                workspace_vocabulary,
+                _,
+                _,
+            ) = skills_util.extract_workspace_data(json.load(skill_file), cls.lang_util)
 
             cls.workspace_df = pd.DataFrame(workspace_data)
             cls.train_set_pd = pd.DataFrame(

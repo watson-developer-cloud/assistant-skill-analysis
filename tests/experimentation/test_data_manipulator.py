@@ -17,7 +17,12 @@ class TestDataManipulator(unittest.TestCase):
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json", "r"
         ) as skill_file:
             cls.workspace = json.load(skill_file)
-            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
+            (
+                workspace_data,
+                workspace_vocabulary,
+                _,
+                _,
+            ) = skills_util.extract_workspace_data(
                 cls.workspace, lang_utils.LanguageUtility("en")
             )
             cls.workspace_df = pd.DataFrame(workspace_data)

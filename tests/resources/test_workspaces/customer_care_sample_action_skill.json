@@ -2210,6 +2210,5 @@
     "learning_opt_out": true
   },
   "description": "Sample simple customer service skill to get you started.",
-  "skill_id": "1234-4321",
   "dialog_settings": {}
 }
