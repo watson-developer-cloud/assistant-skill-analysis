@@ -17,7 +17,12 @@ class TestChi2Analyzer(unittest.TestCase):
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json"
         )
         with open(test_skill_file, "r") as skill_file:
-            workspace_data, workspace_vocabulary, _, _ = skills_util.extract_workspace_data(
+            (
+                workspace_data,
+                workspace_vocabulary,
+                _,
+                _,
+            ) = skills_util.extract_workspace_data(
                 json.load(skill_file), lang_utils.LanguageUtility("en")
             )
             cls.workspace_df = pd.DataFrame(workspace_data)

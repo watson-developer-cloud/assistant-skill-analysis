@@ -41,10 +41,11 @@ class TestHighLighting(unittest.TestCase):
             cls.apikey = fi.readline().strip()
             cls.wksp_id = fi.readline().strip()
 
-        cls.conversation = skills_util.retrieve_conversation(iam_apikey=cls.apikey,
-                                                             url=skills_util.DEV_DATACENTER[0],
-                                                             authenticator_url=skills_util.DEV_DATACENTER[1],
-                                                             )
+        cls.conversation = skills_util.retrieve_conversation(
+            iam_apikey=cls.apikey,
+            url=skills_util.DEV_DATACENTER[0],
+            authenticator_url=skills_util.DEV_DATACENTER[1],
+        )
 
         if not os.path.exists(cls.tmpfolder):
             os.makedirs(cls.tmpfolder)
@@ -102,8 +103,8 @@ class TestHighLighting(unittest.TestCase):
 
     def test_adversarial_examples_multi_thread_inference(self):
         long_example1 = (
-                "um taking a shot here um lets say three "
-                + "separate people whos wills are to each other"
+            "um taking a shot here um lets say three "
+            + "separate people whos wills are to each other"
         )
         wrong_examples_sorted = [
             (

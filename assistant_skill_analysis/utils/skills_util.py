@@ -247,6 +247,18 @@ def extract_workspace_data(workspace, language_util):
     return workspace_pd, vocabulary, entities, raw_intent_name_to_action_title_mapping
 
 
+def get_test_workspace(conversation, workspace_json):
+
+    response_json = conversation.create_workspace(
+        name="test",
+        language="en",
+        intents=workspace_json["intents"],
+        entities=workspace_json["entities"],
+    ).get_result()
+    workspace_id = response_json["workspace_id"]
+    return workspace_id
+
+
 def process_test_set(test_set, lang_util, delim="\t", cos=False):
     """
     Process test set given the path to the test fil
@@ -363,7 +375,7 @@ def _replace_nb_input(
     apikey_patt = "iam_apikey = "
     wksp_id_patt = "skill_id = "
     assistant_id_patt = "ASSISTANT_ID = "
-    action_wksp_json_patt = "ACTION_SKILL_FILENAME = "
+    action_wksp_json_patt = "SKILL_FILENAME = "
     test_file_name_patt = "test_set_path = "
     old_cred_text = ""
     test_urls = '"' + DEV_DATACENTER[0] + '",' + '"' + DEV_DATACENTER[1] + '"'
