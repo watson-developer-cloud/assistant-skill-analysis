@@ -28,6 +28,7 @@ def inference(
     :parameter: verbose: flag indicates verbosity of outputs during mutli-threaded inference
     :parameter: assistant_id:
     :parameter: intent_to_action_mapping:
+    :parameter: timeout: integer or float that specifies number of seconds each thread should wait for inference result
     :return result_df: results dataframe
     """
     skd_version = "V1"
@@ -141,6 +142,7 @@ def thread_inference(
     :param user_id: user_id for billing purpose
     :param assistant_id:
     :parameter: intent_to_action_mapping:
+    :parameter: timeout: integer or float that specifies number of seconds each thread should wait for inference result
     :return result_df: results dataframe
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
