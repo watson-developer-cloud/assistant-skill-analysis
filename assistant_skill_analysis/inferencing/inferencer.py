@@ -17,7 +17,7 @@ def inference(
     assistant_id=None,
     skill_id=None,
     intent_to_action_mapping=None,
-    timeout=1
+    timeout=1,
 ):
     """
     query the message api to generate results on the test data
@@ -117,7 +117,7 @@ def inference(
             skill_id=skill_id,
             assistant_id=assistant_id,
             intent_to_action_mapping=intent_to_action_mapping,
-            timeout=timeout
+            timeout=timeout,
         )
     return result_df
 
@@ -130,7 +130,7 @@ def thread_inference(
     assistant_id=None,
     skill_id=None,
     intent_to_action_mapping=None,
-    timeout=1
+    timeout=1,
 ):
     """
     Perform multi thread inference for faster inference time
