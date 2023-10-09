@@ -341,7 +341,7 @@ def run_notebook(
     )
     # nb = _remove_experimentation(nb)
 
-    proc = ExecutePreprocessor(timeout=60 * 60, kernel_name="python3")
+    proc = ExecutePreprocessor(timeout=60 * 60 * 2, kernel_name="python3")
     proc.allow_errors = True
 
     proc.preprocess(nb, {"metadata": {"path": os.getcwd()}})
