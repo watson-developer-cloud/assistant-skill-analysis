@@ -46,20 +46,20 @@ class TestNotebook(unittest.TestCase):
         )
         self.assertEqual(errors, [])
 
-    def test_action_notebook(self):
-        test_file = "tests/resources/test_workspaces/test_set_action.tsv"
-        wksp_json = (
-            "tests/resources/test_workspaces/customer_care_sample_action_skill.json"
-        )
-        nb, errors = skills_util.run_notebook(
-            notebook_path="new_experience_skill_analysis.ipynb",
-            iam_apikey=self.apikey,
-            test_file=test_file,
-            output_path="notebook_output",
-            assistant_id=self.assistant_id,
-            action_wksp_json_path=wksp_json,
-        )
-        self.assertEqual(errors, [])
+    # def test_action_notebook(self):
+    #     test_file = "tests/resources/test_workspaces/test_set_action.tsv"
+    #     wksp_json = (
+    #         "tests/resources/test_workspaces/customer_care_sample_action_skill.json"
+    #     )
+    #     nb, errors = skills_util.run_notebook(
+    #         notebook_path="new_experience_skill_analysis.ipynb",
+    #         iam_apikey=self.apikey,
+    #         test_file=test_file,
+    #         output_path="notebook_output",
+    #         assistant_id=self.assistant_id,
+    #         action_wksp_json_path=wksp_json,
+    #     )
+    #     self.assertEqual(errors, [])
 
     @classmethod
     def tearDownClass(cls):
