@@ -35,31 +35,31 @@ class TestNotebook(unittest.TestCase):
             _ = fi.readline().strip()
             cls.assistant_id = fi.readline().strip()
 
-    def test_notebook(self):
-        test_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
-        nb, errors = skills_util.run_notebook(
-            notebook_path="classic_dialog_skill_analysis.ipynb",
-            iam_apikey=self.apikey,
-            wksp_id=self.wksp_id,
-            test_file=test_file,
-            output_path="notebook_output",
-        )
-        self.assertEqual(errors, [])
-
-    # def test_action_notebook(self):
-    #     test_file = "tests/resources/test_workspaces/test_set_action.tsv"
-    #     wksp_json = (
-    #         "tests/resources/test_workspaces/customer_care_sample_action_skill.json"
-    #     )
+    # def test_notebook(self):
+    #     test_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
     #     nb, errors = skills_util.run_notebook(
-    #         notebook_path="new_experience_skill_analysis.ipynb",
+    #         notebook_path="classic_dialog_skill_analysis.ipynb",
     #         iam_apikey=self.apikey,
+    #         wksp_id=self.wksp_id,
     #         test_file=test_file,
     #         output_path="notebook_output",
-    #         assistant_id=self.assistant_id,
-    #         action_wksp_json_path=wksp_json,
     #     )
     #     self.assertEqual(errors, [])
+
+    def test_action_notebook(self):
+        test_file = "tests/resources/test_workspaces/test_set_action.tsv"
+        wksp_json = (
+            "tests/resources/test_workspaces/customer_care_sample_action_skill.json"
+        )
+        nb, errors = skills_util.run_notebook(
+            notebook_path="new_experience_skill_analysis.ipynb",
+            iam_apikey=self.apikey,
+            test_file=test_file,
+            output_path="notebook_output",
+            assistant_id=self.assistant_id,
+            action_wksp_json_path=wksp_json,
+        )
+        self.assertEqual(errors, [])
 
     @classmethod
     def tearDownClass(cls):
