@@ -9,7 +9,7 @@ CONFIG_FILE = "./wa_config.txt"
 CONFIG_FILE_ACTION = "./wa_config_action.txt"
 
 
-# @unittest.skip("skip")
+@unittest.skip("skip")
 class TestWorkspaceCredential(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -20,8 +20,7 @@ class TestWorkspaceCredential(unittest.TestCase):
         with open(CONFIG_FILE_ACTION) as fi:
             _ = fi.readline().strip()
             cls.assistant_id = fi.readline().strip()
-    
-    @unittest.skip("skip")
+
     def test_workspace_credentials(self):
         conversation = retrieve_conversation(
             iam_apikey=self.apikey,
@@ -48,11 +47,9 @@ class TestWorkspaceCredential(unittest.TestCase):
             assistant_id=self.assistant_id,
         ).get_result()
 
-        # self.assertAlmostEqual(
-        #     1, result["output"]["intents"][0]["confidence"], delta=1e-6
-        # )
-
-        self.assertGreater(len(result), 0)
+        self.assertAlmostEqual(
+            1, result["output"]["intents"][0]["confidence"], delta=1e-6
+        )
 
 
 if __name__ == "__main__":
