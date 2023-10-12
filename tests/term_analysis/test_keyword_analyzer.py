@@ -70,7 +70,7 @@ class TestKeywordAnalyzer(unittest.TestCase):
             lang_util=self.lang_util,
         )
         unique_counts = len(counts.index.get_level_values(0).unique())
-        actual_labels_shown = np.int(np.ceil(30 / unique_counts)) * unique_counts
+        actual_labels_shown = np.int_(np.ceil(30 / unique_counts)) * unique_counts
         self.assertEqual(
             len(top_counts) == actual_labels_shown, True, "Key word analyzer test fails"
         )

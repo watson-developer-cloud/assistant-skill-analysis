@@ -17,6 +17,7 @@ def inference(
     assistant_id=None,
     skill_id=None,
     intent_to_action_mapping=None,
+    timeout=1,
 ):
     """
     query the message api to generate results on the test data
@@ -27,6 +28,7 @@ def inference(
     :parameter: verbose: flag indicates verbosity of outputs during mutli-threaded inference
     :parameter: assistant_id:
     :parameter: intent_to_action_mapping:
+    :parameter: timeout: integer or float that specifies number of seconds each thread should wait for inference result
     :return result_df: results dataframe
     """
     skd_version = "V1"
@@ -115,6 +117,7 @@ def inference(
             skill_id=skill_id,
             assistant_id=assistant_id,
             intent_to_action_mapping=intent_to_action_mapping,
+            timeout=timeout,
         )
     return result_df
 
@@ -127,6 +130,7 @@ def thread_inference(
     assistant_id=None,
     skill_id=None,
     intent_to_action_mapping=None,
+    timeout=1,
 ):
     """
     Perform multi thread inference for faster inference time
@@ -138,6 +142,7 @@ def thread_inference(
     :param user_id: user_id for billing purpose
     :param assistant_id:
     :parameter: intent_to_action_mapping:
+    :parameter: timeout: integer or float that specifies number of seconds each thread should wait for inference result
     :return result_df: results dataframe
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
@@ -179,7 +184,7 @@ def thread_inference(
         futures[future] = (test_example, ground_truth)
 
     for future in tqdm(futures):
-        res = future.result(timeout=1)
+        res = future.result(timeout=timeout)
         test_example, ground_truth = futures[future]
         result.append(
             process_result(

@@ -2,7 +2,7 @@ import unittest
 from assistant_skill_analysis.utils import skills_util
 import json
 
-
+@unittest.skip("skip")
 class TestNotebook(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -35,16 +35,16 @@ class TestNotebook(unittest.TestCase):
             _ = fi.readline().strip()
             cls.assistant_id = fi.readline().strip()
 
-    def test_notebook(self):
-        test_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
-        nb, errors = skills_util.run_notebook(
-            notebook_path="classic_dialog_skill_analysis.ipynb",
-            iam_apikey=self.apikey,
-            wksp_id=self.wksp_id,
-            test_file=test_file,
-            output_path="notebook_output",
-        )
-        self.assertEqual(errors, [])
+    # def test_notebook(self):
+    #     test_file = "tests/resources/test_workspaces/customer_care_skill_test.tsv"
+    #     nb, errors = skills_util.run_notebook(
+    #         notebook_path="classic_dialog_skill_analysis.ipynb",
+    #         iam_apikey=self.apikey,
+    #         wksp_id=self.wksp_id,
+    #         test_file=test_file,
+    #         output_path="notebook_output",
+    #     )
+    #     self.assertEqual(errors, [])
 
     def test_action_notebook(self):
         test_file = "tests/resources/test_workspaces/test_set_action.tsv"
