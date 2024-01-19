@@ -1,18 +1,29 @@
 import os
 import re
+from types import SimpleNamespace
 import sys
+import jieba
 from nltk.stem.snowball import SnowballStemmer
 from spacy.tokenizer import Tokenizer
 import unicodedata
 import assistant_skill_analysis
 
 
-SUPPORTED_LANGUAGE = ["en", "fr", "de", "cs", "es", "it", "pt", "nl"]
+SUPPORTED_LANGUAGE = ["en", "fr", "de", "cs", "es", "it", "pt", "nl", "zh-cn", "zh-tw"]
 PUNCTUATION = [
     "\\" + chr(i)
     for i in range(sys.maxunicode)
     if unicodedata.category(chr(i)).startswith("P")
 ]
+
+
+class _JiebaTokenizerWrapper:
+    """for zh-cn and zh-tw"""
+
+    def __call__(self, *args, **kwargs):
+        text = args[0]
+        for token in jieba.tokenize(text):
+            yield SimpleNamespace(text=token[0])
 
 
 class LanguageUtility:
@@ -96,6 +107,11 @@ class LanguageUtility:
             self.tokenizer = Tokenizer(Dutch().vocab)
             self.stemmer = SnowballStemmer(language="dutch")
             self.stop_words = self.load_stop_words(stopwords_path)
+
+        elif self.language_code in ["zh-cn", "zh-tw"]:
+            self.tokenizer = _JiebaTokenizerWrapper()
+            self.stop_words = self.load_stop_words(stopwords_path)
+
         else:
             raise Exception("language code %s is not supported", self.language_code)
 
