@@ -8,7 +8,7 @@ class TestNotebook(unittest.TestCase):
         # points to dev010_Haode-Qi
         CONFIG_FILE = "./wa_config.txt"
         with open(CONFIG_FILE) as fi:
-            cls.apikey = fi.readline().strip()
+            cls.apikey = fi.read()#fi.readline().strip()
 
         with open(
             "tests/resources/test_workspaces/skill-Customer-Care-Sample.json",
