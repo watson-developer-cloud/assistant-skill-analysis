@@ -24,6 +24,7 @@ class TestNotebook(unittest.TestCase):
             authenticator_url=authenticator_url,
             api_version=skills_util.DEFAULT_V1_API_VERSION,
         )
+        raise ValueError("api:"+str(cls.apikey)+",url:"+str(URL)+",auth:"+str(authenticator_url))
         cls.wksp_id = skills_util.get_test_workspace(
             conversation=cls.conversation, workspace_json=data
         )
