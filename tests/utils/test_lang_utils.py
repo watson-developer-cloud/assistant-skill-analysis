@@ -61,6 +61,20 @@ class TestLangUtils(unittest.TestCase):
         sent = util.tokenize(sent)
         self.assertEqual(sent, ["autobahn"])
 
+    def test_zh_cn(self):
+        util = LanguageUtility("zh-cn")
+        sent = util.preprocess("不想当兼职")
+        self.assertEqual(sent, "不想当兼职")
+        sent = util.tokenize(sent)
+        self.assertEqual(sent, ['不想', '当', '兼职'])
+
+    def test_zh_tw(self):
+        util = LanguageUtility("zh-tw")
+        sent = util.preprocess("畀到機會我嘗試")
+        self.assertEqual(sent, "畀到機會我嘗試")
+        sent = util.tokenize(sent)
+        self.assertEqual(sent, ['畀', '到', '機會', '我', '嘗試'])
+
     def tearDown(self):
         unittest.TestCase.tearDown(self)
         self.skill_file.close()
