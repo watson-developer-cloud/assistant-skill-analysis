@@ -453,6 +453,7 @@ def retrieve_classifier_response(
     user_id="256",
     assistant_id=None,
     skill_id=None,
+    environment_id=None,
 ):
     """
     retrieve classifier response
@@ -462,6 +463,7 @@ def retrieve_classifier_response(
     :param alternate_intents:
     :param user_id:
     :param assistant_id:
+    :param environment_id: environment id
     :return response:
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
@@ -482,5 +484,6 @@ def retrieve_classifier_response(
             },
             context={"metadata": {"user_id": user_id}},
             assistant_id=assistant_id,
+            environment_id=environment_id,
         ).get_result()
     return response

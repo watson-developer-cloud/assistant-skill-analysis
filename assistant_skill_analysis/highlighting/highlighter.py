@@ -26,6 +26,7 @@ def get_highlights_in_batch_multi_thread(
     skill_id=None,
     assistant_id=None,
     intent_to_action_mapping=None,
+    environment_id=None,
 ):
     """
     Given the prediction result, rank prediction results from worst to best
@@ -39,6 +40,7 @@ def get_highlights_in_batch_multi_thread(
     :param show_worst_k: the top worst k results based on heuristics
     :param assistant_id:
     :param intent_to_action_mapping:
+    :param environment_id: the environment id
     :return:
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
@@ -68,6 +70,7 @@ def get_highlights_in_batch_multi_thread(
         skill_id=skill_id,
         assistant_id=assistant_id,
         intent_to_action_mapping=intent_to_action_mapping,
+        environment_id=environment_id,
     )
 
     if not adversarial_results.empty:
@@ -253,6 +256,7 @@ def _adversarial_examples_multi_thread_inference(
     skill_id=None,
     assistant_id=None,
     intent_to_action_mapping=None,
+    environment_id=None,
 ):
     """
     Perform multi threaded inference on all the adversarial examples
@@ -261,6 +265,7 @@ def _adversarial_examples_multi_thread_inference(
     :param skill_id:
     :param assistant_id:
     :param intent_to_action_mapping:
+    :param environment_id:
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
         assert skill_id is not None
@@ -299,6 +304,7 @@ def _adversarial_examples_multi_thread_inference(
         skill_id=skill_id,
         assistant_id=assistant_id,
         intent_to_action_mapping=intent_to_action_mapping,
+        environment_id=environment_id,
     )
     display(Markdown("   "))
     return adversarial_results, adversarial_span_dict

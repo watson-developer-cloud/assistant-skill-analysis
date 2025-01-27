@@ -18,6 +18,7 @@ def inference(
     skill_id=None,
     intent_to_action_mapping=None,
     timeout=1,
+    environment_id=None,
 ):
     """
     query the message api to generate results on the test data
@@ -29,6 +30,7 @@ def inference(
     :parameter: assistant_id:
     :parameter: intent_to_action_mapping:
     :parameter: timeout: integer or float that specifies number of seconds each thread should wait for inference result
+    :parameter: environment_id: environment id
     :return result_df: results dataframe
     """
     skd_version = "V1"
@@ -54,6 +56,7 @@ def inference(
                         user_id=user_id,
                         assistant_id=assistant_id,
                         skill_id=skill_id,
+                        environment_id=environment_id,
                     )
                     time.sleep(0.3)
 
@@ -118,6 +121,7 @@ def inference(
             assistant_id=assistant_id,
             intent_to_action_mapping=intent_to_action_mapping,
             timeout=timeout,
+            environment_id=environment_id,
         )
     return result_df
 
@@ -131,6 +135,7 @@ def thread_inference(
     skill_id=None,
     intent_to_action_mapping=None,
     timeout=1,
+    environment_id=None,
 ):
     """
     Perform multi thread inference for faster inference time
@@ -143,6 +148,7 @@ def thread_inference(
     :param assistant_id:
     :parameter: intent_to_action_mapping:
     :parameter: timeout: integer or float that specifies number of seconds each thread should wait for inference result
+    :parameter: environment_id: environment id
     :return result_df: results dataframe
     """
     if isinstance(conversation, ibm_watson.AssistantV1):
@@ -162,6 +168,7 @@ def thread_inference(
                 user_id=user_id,
                 assistant_id=assistant_id,
                 skill_id=skill_id,
+                environment_id=environment_id,
             )
         except Exception:
             count += 1
@@ -179,6 +186,7 @@ def thread_inference(
             user_id=user_id,
             assistant_id=assistant_id,
             skill_id=skill_id,
+            environment_id=environment_id,
             retry=0,
         )
         futures[future] = (test_example, ground_truth)
@@ -248,6 +256,7 @@ def get_intent_confidence_retry(
     user_id,
     assistant_id,
     skill_id,
+    environment_id,
     retry=0,
 ):
     try:
@@ -258,6 +267,7 @@ def get_intent_confidence_retry(
             user_id=user_id,
             assistant_id=assistant_id,
             skill_id=skill_id,
+            environment_id=environment_id,
         )
     except Exception as e:
         if retry < MAX_RETRY:
@@ -268,6 +278,7 @@ def get_intent_confidence_retry(
                 user_id,
                 assistant_id,
                 skill_id,
+                environment_id=environment_id,
                 retry=retry + 1,
             )
         else:
