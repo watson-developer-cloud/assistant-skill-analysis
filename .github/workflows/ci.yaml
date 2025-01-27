@@ -36,9 +36,6 @@ jobs:
           WA_CONFIG_ACTION: ${{secrets.WA_CONFIG_ACTION}}
         run: |
           python -m assistant_skill_analysis.utils.parse_secret
-      - name: Output error message
-        run: |
-          pytest tests || true
       - name: unittest
         run: |
           pytest tests
