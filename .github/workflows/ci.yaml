@@ -23,6 +23,9 @@ jobs:
           pip install pytest
           pip install -r requirements.txt
           export PYTHONPATH=`pwd`
+      - name: Install NLTK data
+        run: |
+          python -m nltk.downloader punkt
       - name: style-check
         run: |
           black --check assistant_skill_analysis
