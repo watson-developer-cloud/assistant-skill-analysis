@@ -62,6 +62,28 @@ class TestSkillsUtil(unittest.TestCase):
             len(workspace_pd["intent"].unique()), 9, "Extract workspace failed"
         )
 
+    def test_parse_intent_from_action_condition(self):
+
+        data = {
+          "intent": "action_10017_intent_27671"
+        }
+        self.assertEqual(
+            skills_util._get_intent_name_from_action_condition(data), "action_10017_intent_27671"
+        )
+        data = {
+          "and": [
+            {
+              "intent": "action_15841_intent_20012"
+            },
+            {
+              "expression": "false"
+            }
+          ]
+        }
+        self.assertEqual(
+            skills_util._get_intent_name_from_action_condition(data), "action_15841_intent_20012"
+        )
+
     @classmethod
     def tearDownClass(cls):
         cls.skill_file.close()

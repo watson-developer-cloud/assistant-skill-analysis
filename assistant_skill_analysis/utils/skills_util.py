@@ -179,6 +179,15 @@ def retrieve_workspace(skill_id, conversation, export_flag=True):
     return ws_json.get_result()
 
 
+def _get_intent_name_from_action_condition(condition: dict):
+    if "intent" in condition and condition["intent"] is not None:
+        return condition["intent"]
+    for v in condition.values():
+        if isinstance(v, list):
+            for cond in v:
+                return _get_intent_name_from_action_condition(cond)
+
+
 def parse_workspace_json(workspace_json):
     """
     Parse workspace json and returns list of utterances, list of intents, and list of entities, and intent to action title mapping
@@ -202,13 +211,17 @@ def parse_workspace_json(workspace_json):
 
     else:
         # intent name to action title mapping for readability
-        raw_intent_name_to_action_title_mapping = {
-            action["condition"]["intent"]: action["title"]
-            for action in workspace_json["workspace"]["actions"]
-            if action.get("condition", {}).get("intent")
-        }
+        raw_intent_name_to_action_title_mapping = {}
+        for action in workspace_json["workspace"]["actions"]:
+            possible_intent = _get_intent_name_from_action_condition(action.get("condition", {}))
+            if possible_intent:
+                raw_intent_name_to_action_title_mapping[possible_intent] = action["title"]
         for intent in workspace_json["workspace"]["intents"]:
-            action_title = raw_intent_name_to_action_title_mapping[intent["intent"]]
+            intent_name = intent["intent"]
+            action_title = raw_intent_name_to_action_title_mapping.get(intent_name)
+            if action_title is None:
+                raw_intent_name_to_action_title_mapping[intent_name] = intent_name
+                action_title = intent_name
             for example in intent["examples"]:
                 utterances.append(example["text"])
                 intents.append(action_title)
